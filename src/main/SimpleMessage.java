@@ -18,17 +18,33 @@ class SimpleMessage implements Message {
         this.destination = destination;
     }
 
-    private String getMessage() {
+    public String getMessage() {
         return this.message;
+    }
+
+    public Timestamp getTimestamp() {
+        return this.timestamp;
+    }
+
+    public String getUsername() {
+        return this.username;
+    }
+
+    public String getDestination() {
+        return this.destination;
     }
 
     @Override
     public String toString() {
-        return this.message;
+        return "<User: " + this.username + 
+               "; Message: " + this.message + ">";
     }
 
     @Override
     public int hashCode() {
-        //TODO
+        int hash = 7;
+        for (char c: this.message.toCharArray()) hash = hash*31 + c;
+        for (char c: this.username.toCharArray()) hash = hash*31 + c;
+        return hash;
     }
 }
