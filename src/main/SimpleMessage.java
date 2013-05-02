@@ -37,6 +37,7 @@ class SimpleMessage implements Message {
     @Override
     public String toString() {
         return "<User: " + this.username + 
+               "; Conversation: " + this.destination +
                "; Message: " + this.message + ">";
     }
 
