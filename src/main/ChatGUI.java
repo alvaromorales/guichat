@@ -57,6 +57,7 @@ public class ChatGUI extends JFrame {
         inputTextArea.setLineWrap(true);
         inputTextArea.setRows(5);
         inputTextArea.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "submitMessage");
+        //NOTE: do the following for textarea events. DON'T USE KEYLISTENERS. bad practice.
         inputTextArea.getActionMap().put("submitMessage", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
