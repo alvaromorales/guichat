@@ -4,6 +4,10 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import javax.swing.*;
 
 /**
@@ -189,6 +193,19 @@ public class ChatGUI extends JFrame {
         jMenuItem5.setMnemonic(KeyEvent.VK_N); //example of mnemonic
         jMenuItem5.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())); //example of accelerator
         jMenuItem6.setText("Documentation");
+        jMenuItem6.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                //open up a documentation in browser
+                // open the default web browser for the HTML page
+                try {
+                    Desktop.getDesktop().browse(new URI("https://github.com/jholliman/guichat"));
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                } catch (URISyntaxException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
         fileMenu.add(jMenuItem5);
         fileMenu.add(jMenuItem4);
         fileMenu.addSeparator();
