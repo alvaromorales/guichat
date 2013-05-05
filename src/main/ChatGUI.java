@@ -2,6 +2,7 @@ package main;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -11,14 +12,15 @@ import javax.swing.table.DefaultTableModel;
 
 public class ChatGUI extends JFrame {
 
-    //GUI components
+    //GUI variable declarations: DO NOT TOUCH
     private JScrollPane jScrollPane1, jScrollPane2, jScrollPane3;
-    private JTextArea inputTextArea, chatTextArea, openRoomList;
+    private JTextArea inputTextArea, chatTextArea, chatRoomList;
     private JLabel avaiableChatRoomsLabel, messageLabel;
     private JButton sendButton;
-    private JMenuBar jMenuBar1;
+    private JMenuBar menuBar;
     private JMenu fileMenu, helpMenu;
     private JMenuItem jMenuItem1, jMenuItem2, jMenuItem3, jMenuItem4, jMenuItem5, jMenuItem6;
+    //END OF VARIABLE DECLARATION
 
     public ChatGUI() {
         initComponents();
@@ -32,10 +34,10 @@ public class ChatGUI extends JFrame {
         chatTextArea = new JTextArea();
         sendButton = new JButton();
         jScrollPane3 = new JScrollPane();
-        openRoomList = new JTextArea();
+        chatRoomList = new JTextArea();
         avaiableChatRoomsLabel = new JLabel();
         messageLabel = new JLabel();
-        jMenuBar1 = new JMenuBar();
+        menuBar = new JMenuBar();
         fileMenu = new JMenu();
         helpMenu = new JMenu();
         jMenuItem1 = new JMenuItem();
@@ -58,7 +60,7 @@ public class ChatGUI extends JFrame {
         //area to display messages
         chatTextArea.setColumns(20);
         chatTextArea.setEditable(false);
-        chatTextArea.setFont(new Font("Times New Roman", 0, 12)); // NOI18N
+        chatTextArea.setFont(new Font("Times New Roman", 0, 12));
         chatTextArea.setLineWrap(true);
         chatTextArea.setRows(5);
         jScrollPane2.setViewportView(chatTextArea);
@@ -67,14 +69,22 @@ public class ChatGUI extends JFrame {
         messageLabel.setHorizontalAlignment(SwingConstants.CENTER);
         messageLabel.setText("Chat Window"); //dynamically set this
 
+        //send button
         sendButton.setText("Send");
+        sendButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                sendButtonClickHandler(e);
+            }
+        });
 
         //list of open rooms. NOTE: rooms that you are connected
-        //to will be starred or put in bold  
-        openRoomList.setEditable(false);
-        openRoomList.setColumns(20);
-        openRoomList.setRows(5);
-        jScrollPane3.setViewportView(openRoomList);
+        //to will be starred or put in bold.
+        //They will also have a number next to the name if there
+        //are unread messages
+        chatRoomList.setEditable(false);
+        chatRoomList.setColumns(20);
+        chatRoomList.setRows(5);
+        jScrollPane3.setViewportView(chatRoomList);
 
         //Open chat rooms label
         avaiableChatRoomsLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -85,12 +95,13 @@ public class ChatGUI extends JFrame {
         helpMenu.setText("Help");
         jMenuItem1.setText("Settings");
         jMenuItem2.setText("Connect to Chat Server");
-        //example of accelerator and mnemonic
-        jMenuItem2.setMnemonic(KeyEvent.VK_T);
-        jMenuItem2.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, ActionEvent.ALT_MASK));
+        jMenuItem2.setMnemonic(KeyEvent.VK_T); //example of mnemonic
+        jMenuItem2.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, ActionEvent.ALT_MASK)); //example of accelerator
         jMenuItem3.setText("Disconnect from Chat Server");
         jMenuItem4.setText("Connect to Room");
         jMenuItem5.setText("Create Room");
+        jMenuItem5.setMnemonic(KeyEvent.VK_N); //example of mnemonic
+        jMenuItem5.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())); //example of accelerator
         jMenuItem6.setText("Documentation");
         fileMenu.add(jMenuItem5);
         fileMenu.add(jMenuItem4);
@@ -100,9 +111,9 @@ public class ChatGUI extends JFrame {
         fileMenu.addSeparator();
         fileMenu.add(jMenuItem1);
         helpMenu.add(jMenuItem6);
-        jMenuBar1.add(fileMenu);
-        jMenuBar1.add(helpMenu);
-        setJMenuBar(jMenuBar1);
+        menuBar.add(fileMenu);
+        menuBar.add(helpMenu);
+        setJMenuBar(menuBar);
 
         //set window layout
         GroupLayout layout = new GroupLayout(getContentPane());
@@ -150,6 +161,27 @@ public class ChatGUI extends JFrame {
 
         //size window properly
         pack();
+    }
+
+    private void sendButtonClickHandler(ActionEvent e) {
+        //eventually move this to a separate method
+        //to make things more modular
+        String nothing = "";
+        String username = "jholliman"; //temporary var for testing
+        String messageText = inputTextArea.getText();
+        if ((inputTextArea.getText()).equals(nothing)) { //check for text
+            inputTextArea.setText("");
+            inputTextArea.requestFocus();
+        } else {
+            //TODO
+            //send message to server here
+            chatTextArea.append(username + ": " + messageText + "\n");
+            inputTextArea.setText("");
+            inputTextArea.requestFocus();
+        }
+
+        inputTextArea.setText("");
+        inputTextArea.requestFocus();
     }
 
     public static void main(final String[] args) {
