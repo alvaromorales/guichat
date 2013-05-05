@@ -294,6 +294,7 @@ public class ChatGUI extends JFrame {
     private void connectToRoom(ActionEvent e) {
         //TODO
         System.out.println("yep");
+        JOptionPane.showMessageDialog(this, "Eggs are not supposed to be green.");
     }
 
     private void disconnectFromRoom(ActionEvent e) {
