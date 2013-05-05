@@ -18,20 +18,22 @@ class ChatSession {
         this.chatWindows = Collections.synchronizedList(new ArrayList<ChatWindow>());
     }
 
-    private synchronized void routeMessage(ChatWindow c, Message m) {
+    private void routeMessage(ChatWindow c, Message m) {
         //find the correct window
-        for (ChatWindow cw: chatWindows) {
-            if (cw.equals(c)) {
-                cw.addMessage(m);
-                //also display message in cooresponding GUI window
-                //TODO
+        synchronized(chatWindows) {
+            for (ChatWindow cw: chatWindows) {
+                if (cw.equals(c)) {
+                    cw.addMessage(m);
+                    //also display message in cooresponding GUI window
+                    //TODO
+                }
             }
         }
         //window was not found
         //need to handle this somehow...
     }
 
-    private synchronized void sendMessage(ChatWindow c, Message m) {
+    private void sendMessage(ChatWindow c, Message m) {
         //add the message
         c.addMessage(m);
         //also display window in corresponding GUI window
@@ -39,22 +41,25 @@ class ChatSession {
         c.sendMessage(m);
     }
 
-    private synchronized boolean openChatWindow(ChatWindow c) {
+    private  boolean openChatWindow(ChatWindow c) {
         //check that the window were attempting to add doesn't already exist
-        for (ChatWindow cw: chatWindows) {
-            if (cw.equals(c)) {
-                //handle duplicate window somehow
-                return false;
+        synchronized(chatWindows) {
+            for (ChatWindow cw: chatWindows) {
+                if (cw.equals(c)) {
+                    //handle duplicate window somehow
+                    return false;
+                }
             }
         }
+        
         //add the chat window and create corresponding GUI pieces
         chatWindows.add(c);
         return true;
     }
 
-    private void closeChatWindow(ChatWindow c) {
+    private void closeChatWindow(ChatWindow c) throws InterruptedException {
         //wait for the threads in the ChatWindow to finish
-        for (Thread t: c.chatWindowThreads) {
+        for (Thread t: c.getThreads()) {
             t.join();
         }
         //send Request object to server
@@ -65,11 +70,14 @@ class ChatSession {
         //TODO
     }
 
-    private boolean logout() {
+    private boolean logout() throws InterruptedException {
         //close all of the chat windows and corresponding GUI pieces
-        for (ChatWindow cw: chatWindows) {
-            for (Thread t: cw.chatWindowThreads) t.join();
+        synchronized(chatWindows) {
+            for (ChatWindow cw: chatWindows) {
+                for (Thread t: cw.getThreads()) t.join();
+            }
         }
+        
         //eliminate GUI pieces
         //TODO
         //terminate ChatSession

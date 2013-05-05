@@ -18,22 +18,26 @@ class ChatWindow {
         this.chatWindowThreads = Collections.synchronizedList(new ArrayList<Thread>());
     }
 
-    private void getListOfClients() {
+    public void getListOfClients() {
         //TODO
         //needs to create a Request object added to chatWindowThreads
     }
 
-    private void sendMessage(Message m) {
+    public void sendMessage(Message m) {
         //TODO
         //needs to create a Request object added to chatWindowThreads
     }
 
-    private void addMessage(Message m) {
+    public void addMessage(Message m) {
         this.messages.add(m);
     }
 
-    private List<Message> getMessages() {
+    public List<Message> getMessages() {
         return this.messages;
+    }
+
+    public List<Thread> getThreads() {
+        return this.chatWindowThreads;
     }
 
     @Override
@@ -42,6 +46,7 @@ class ChatWindow {
         if (obj == null) return false;
         if (obj == this) return true;
         if (!(obj instanceof ChatWindow)) return false;
+
         ChatWindow that = (ChatWindow) obj;
         //just check that the name's are equal. name's unique for a ChatWindow.
         if (this.name.equals(that.name)) return true;
