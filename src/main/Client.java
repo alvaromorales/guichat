@@ -54,6 +54,13 @@ public class Client {
      * @throws IOException if the server socket is broken
      */
     private static void listen() throws IOException {
+        //Types of responses (both success and failure):
+        // - login 
+        // - joining a chatroom
+        // - leaving a chatroom
+        // - send a message
+        // - other user joining a chatroom
+        // - other user leaving a chatroom
         String serverResponse;
         while ((serverResponse = input.readLine()) != null) {
             //currently just prints to the console
