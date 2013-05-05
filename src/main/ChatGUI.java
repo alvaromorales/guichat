@@ -187,9 +187,7 @@ public class ChatGUI extends JFrame {
         jMenuItem1.setText("Settings");
         jMenuItem1.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                //TODO
-                //Open a settings window or something
-                System.out.println("Settings pressed");
+                settings(e);
             }
         });
         jMenuItem2.setText("Connect to Chat Server");
@@ -197,28 +195,19 @@ public class ChatGUI extends JFrame {
         jMenuItem2.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, ActionEvent.ALT_MASK)); //example of accelerator
         jMenuItem2.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                //TODO
-                //Open a dialog prompting user for name or something
-                //idea of preferences file
-                System.out.println("connect to server pressed");
+                connectToServer(e);
             }
         });
         jMenuItem3.setText("Disconnect from Chat Server");
         jMenuItem3.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                //TODO
-                //kill all chat windows
-                //clear text areas
-                //print disconnected to screen
-                System.out.println("disconnect pressed");
+                disconnectFromRoom(e);
             }
         });
         jMenuItem4.setText("Connect to Room");
         jMenuItem4.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                //TODO
-                //open dialog asking user for the name of the room they would like to join
-                System.out.println("connect to room pressed");
+                connectToRoom(e);
             }
         });
         jMenuItem5.setText("Create Room");
@@ -226,9 +215,7 @@ public class ChatGUI extends JFrame {
         jMenuItem5.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())); //example of accelerator
         jMenuItem5.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                //TODO
-                //open dialog asking user for the name of the room they would like to create
-                System.out.println("create room pressed");
+                createRoom(e);
             }
         });
         jMenuItem6.setText("Documentation");
@@ -303,6 +290,36 @@ public class ChatGUI extends JFrame {
 
         //size window properly
         pack();
+    }
+
+    private void connectToRoom(ActionEvent e) {
+        //TODO
+        System.out.println("yep");
+    }
+
+    private void disconnectFromRoom(ActionEvent e) {
+        //TODO
+        System.out.println("yep");
+    }
+
+    private void connectToServer(ActionEvent e) {
+        //TODO
+        System.out.println("yep");
+    }
+
+    private void disconnectFromServer(ActionEvent e) {
+        //TODO
+        System.out.println("yep");
+    }
+
+    private void createRoom(ActionEvent e) {
+        //TODO
+        System.out.println("yep");
+    }
+
+    private void settings(ActionEvent e) {
+        //TODO
+        System.out.println("yep");
     }
 
     private void sendButtonHandler(ActionEvent e) {
