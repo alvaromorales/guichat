@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.*;
@@ -55,12 +56,19 @@ public class ChatGUI extends JFrame {
         inputTextArea.setColumns(20);
         inputTextArea.setLineWrap(true);
         inputTextArea.setRows(5);
+        inputTextArea.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "submitMessage");
+        inputTextArea.getActionMap().put("submitMessage", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                sendButtonHandler(e);
+            }
+        });
         jScrollPane1.setViewportView(inputTextArea);
 
         //area to display messages
         chatTextArea.setColumns(20);
         chatTextArea.setEditable(false);
-        chatTextArea.setFont(new Font("Times New Roman", 0, 12));
+        chatTextArea.setFont(new Font("Times New Roman", 0, 16));
         chatTextArea.setLineWrap(true);
         chatTextArea.setRows(5);
         jScrollPane2.setViewportView(chatTextArea);
@@ -73,7 +81,7 @@ public class ChatGUI extends JFrame {
         sendButton.setText("Send");
         sendButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                sendButtonClickHandler(e);
+                sendButtonHandler(e);
             }
         });
 
@@ -163,7 +171,7 @@ public class ChatGUI extends JFrame {
         pack();
     }
 
-    private void sendButtonClickHandler(ActionEvent e) {
+    private void sendButtonHandler(ActionEvent e) {
         //eventually move this to a separate method
         //to make things more modular
         String nothing = "";
