@@ -73,12 +73,13 @@ import javax.swing.*;
  * ---
  * This test should show the message displayed next to the first specified username, the new chat room should be in the list
  * of available chat rooms, the other user should be able to create a new username and login to the chat server and see the 
- * other user's chat room in the list. The second user should be able to join the first user's room. The first user should be
+ * other user's chat room in the list. The second user should be able to join the first user's room. The first user should be 
  * notified that the second user joined. The second user should not be able to see the first user's previous message. The 
- * second user should be able to type in a delayed message, which will be displayed next to their username. The first user
- * should be able to type in a message before the second user's message shows up, which will be displayed next to the first 
- * username. The second user's delayed message should show up before the first user's message. Both users should be able to 
- * see both messages.The second user should be notified that the first user left. The second user should be able to leave.
+ * second user should be able to type in a delayed message, which will be displayed next to their username immediately. 
+ * The first user should be able to type in a message before the second user's message shows up for them, which will be 
+ * displayed next to the first username. The second user's delayed message should show up before the first user's message. 
+ * Both users should be able to see both messages eventually.The second user should be notified that the first user left. 
+ * The second user should be able to leave.
  * 
  * Other tests:
  * One user, multiple chat rooms
