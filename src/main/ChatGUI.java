@@ -102,21 +102,59 @@ public class ChatGUI extends JFrame {
         fileMenu.setText("File");
         helpMenu.setText("Help");
         jMenuItem1.setText("Settings");
+        jMenuItem1.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                //TODO
+                //Open a settings window or something
+                System.out.println("Settings pressed");
+            }
+        });
         jMenuItem2.setText("Connect to Chat Server");
         jMenuItem2.setMnemonic(KeyEvent.VK_T); //example of mnemonic
-        jMenuItem2.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, ActionEvent.ALT_MASK)); //example of accelerator
+        jMenuItem2.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, ActionEvent.ALT_MASK)); //example of accelerator
+        jMenuItem2.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                //TODO
+                //Open a dialog prompting user for name or something
+                //idea of preferences file
+                System.out.println("connect to server pressed");
+            }
+        });
         jMenuItem3.setText("Disconnect from Chat Server");
+        jMenuItem3.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                //TODO
+                //kill all chat windows
+                //clear text areas
+                //print disconnected to screen
+                System.out.println("disconnect pressed");
+            }
+        });
         jMenuItem4.setText("Connect to Room");
+        jMenuItem4.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                //TODO
+                //open dialog asking user for the name of the room they would like to join
+                System.out.println("connect to room pressed");
+            }
+        });
         jMenuItem5.setText("Create Room");
         jMenuItem5.setMnemonic(KeyEvent.VK_N); //example of mnemonic
         jMenuItem5.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())); //example of accelerator
+        jMenuItem5.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                //TODO
+                //open dialog asking user for the name of the room they would like to create
+                System.out.println("create room pressed");
+            }
+        });
         jMenuItem6.setText("Documentation");
         jMenuItem6.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //open up a documentation in browser
                 // open the default web browser for the HTML page
                 try {
-                    Desktop.getDesktop().browse(new URI("https://github.com/jholliman/guichat"));
+                    Desktop.getDesktop().browse(new URI("https://github.com/jholliman/guichat/blob/master/README.md"));
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 } catch (URISyntaxException e1) {
