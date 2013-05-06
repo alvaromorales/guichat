@@ -3,6 +3,8 @@ package main;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.net.URI;
@@ -90,15 +92,15 @@ import javax.swing.*;
 
 public class ChatGUI extends JFrame {
 
-    //GUI variable declarations: DO NOT TOUCH
+    //GUI variable declarations
     private JScrollPane jScrollPane1, jScrollPane2, jScrollPane3;
     private JTextArea inputTextArea, chatTextArea, chatRoomList;
     private JLabel avaiableChatRoomsLabel, messageLabel;
     private JButton sendButton;
     private JMenuBar menuBar;
-    private JMenu fileMenu, helpMenu;
-    private JMenuItem jMenuItem1, jMenuItem2, jMenuItem3, jMenuItem4, jMenuItem5, jMenuItem6;
-    //END OF VARIABLE DECLARATION
+    private JMenu fileMenu, editMenu, helpMenu;
+    private JMenuItem jMenuItem1, jMenuItem2, jMenuItem3, jMenuItem4, jMenuItem5, jMenuItem6, jMenuItem7, jMenuItem8;
+    private boolean isConnected = false;
     
     /**
      * ChatGUI constructor
@@ -107,6 +109,7 @@ public class ChatGUI extends JFrame {
      */
     public ChatGUI() {
         initComponents();
+        writeToWindow("System Message: To connect navigate to Connect to Server in the menu or press ctrl-d (or command-d).\n");
     }
 
     private void initComponents() {
@@ -122,6 +125,7 @@ public class ChatGUI extends JFrame {
         messageLabel = new JLabel();
         menuBar = new JMenuBar();
         fileMenu = new JMenu();
+        editMenu = new JMenu();
         helpMenu = new JMenu();
         jMenuItem1 = new JMenuItem();
         jMenuItem2 = new JMenuItem();
@@ -129,6 +133,8 @@ public class ChatGUI extends JFrame {
         jMenuItem4 = new JMenuItem();
         jMenuItem5 = new JMenuItem();
         jMenuItem6 = new JMenuItem();
+        jMenuItem7 = new JMenuItem();
+        jMenuItem8 = new JMenuItem();
 
         //set close and title
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -137,6 +143,7 @@ public class ChatGUI extends JFrame {
         //box to write message in
         inputTextArea.setColumns(20);
         inputTextArea.setLineWrap(true);
+        inputTextArea.setWrapStyleWord(true);
         inputTextArea.setRows(5);
         inputTextArea.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "submitMessage");
         //NOTE: do the following for textarea events. DON'T USE KEYLISTENERS. bad practice.
@@ -147,12 +154,14 @@ public class ChatGUI extends JFrame {
             }
         });
         jScrollPane1.setViewportView(inputTextArea);
+        
 
         //area to display messages
         chatTextArea.setColumns(20);
         chatTextArea.setEditable(false);
         chatTextArea.setFont(new Font("Times New Roman", 0, 16));
         chatTextArea.setLineWrap(true);
+        chatTextArea.setWrapStyleWord(true);
         chatTextArea.setRows(5);
         jScrollPane2.setViewportView(chatTextArea);
 
@@ -183,6 +192,7 @@ public class ChatGUI extends JFrame {
 
         //Menu bar
         fileMenu.setText("File");
+        editMenu.setText("Edit");
         helpMenu.setText("Help");
         jMenuItem1.setText("Settings");
         jMenuItem1.addActionListener(new ActionListener() {
@@ -192,7 +202,7 @@ public class ChatGUI extends JFrame {
         });
         jMenuItem2.setText("Connect to Chat Server");
         jMenuItem2.setMnemonic(KeyEvent.VK_T); //example of mnemonic
-        jMenuItem2.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, ActionEvent.ALT_MASK)); //example of accelerator
+        jMenuItem2.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())); //example of accelerator
         jMenuItem2.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 connectToServer(e);
@@ -201,7 +211,7 @@ public class ChatGUI extends JFrame {
         jMenuItem3.setText("Disconnect from Chat Server");
         jMenuItem3.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                disconnectFromRoom(e);
+                disconnectFromServer(e);
             }
         });
         jMenuItem4.setText("Connect to Room");
@@ -232,15 +242,31 @@ public class ChatGUI extends JFrame {
                 }
             }
         });
+        jMenuItem7.setText("Leave Current Room");
+        jMenuItem7.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                disconnectFromRoom(e);
+            }
+        });
+        jMenuItem8.setText("Save Current Conversation");
+        jMenuItem8.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                saveConversation(e);
+            }
+        });
         fileMenu.add(jMenuItem5);
+        fileMenu.addSeparator();
         fileMenu.add(jMenuItem4);
+        fileMenu.add(jMenuItem7);
         fileMenu.addSeparator();
         fileMenu.add(jMenuItem2);
         fileMenu.add(jMenuItem3);
         fileMenu.addSeparator();
         fileMenu.add(jMenuItem1);
         helpMenu.add(jMenuItem6);
+        editMenu.add(jMenuItem8);
         menuBar.add(fileMenu);
+        menuBar.add(editMenu);
         menuBar.add(helpMenu);
         setJMenuBar(menuBar);
 
@@ -292,55 +318,117 @@ public class ChatGUI extends JFrame {
         pack();
     }
 
+    //Helpers
+
+    private void writeToWindow(String text) {
+        chatTextArea.append(text);
+        scrollToBottomOfChatWindow();
+    }
+
+    private void scrollToBottomOfChatWindow() {
+        //scroll to the bottom of the scroll pane
+        JScrollBar vertical = jScrollPane2.getVerticalScrollBar();
+        vertical.setValue(vertical.getMaximum());
+    }
+
     private void connectToRoom(ActionEvent e) {
-        //TODO
-        System.out.println("yep");
-        JOptionPane.showMessageDialog(this, "Eggs are not supposed to be green.");
+        if (isConnected) {
+            Object[] possibilities = {"ham", "spam", "yam"}; //get the list of rooms
+            String s = (String)JOptionPane.showInputDialog(
+                                this,
+                                "What room would you like to join?",
+                                "Connect to Room",
+                                JOptionPane.PLAIN_MESSAGE,
+                                null,
+                                possibilities,
+                                possibilities[0]);
+            //TODO
+        }
     }
 
     private void disconnectFromRoom(ActionEvent e) {
-        //TODO
-        System.out.println("yep");
+        if (isConnected) {
+            int n = JOptionPane.showConfirmDialog(
+                            this,
+                            "Are you sure that you want to leave this room?",
+                            "Disconnect from Room",
+                            JOptionPane.YES_NO_OPTION);
+            //TODO
+        }
     }
 
     private void connectToServer(ActionEvent e) {
+        String s = (String)JOptionPane.showInputDialog(
+                this,
+                "What would you like your nickname to be? (This must be unique)",
+                "Connect to Server",
+                JOptionPane.PLAIN_MESSAGE,
+                null,
+                null,
+                "Ex. jholliman");
         //TODO
-        System.out.println("yep");
     }
 
     private void disconnectFromServer(ActionEvent e) {
-        //TODO
-        System.out.println("yep");
+        if (isConnected) {
+            int n = JOptionPane.showConfirmDialog(
+                            this,
+                            "Are you sure that you would like to disconnect? All chats will be closed and the associated histories will be deleted.",
+                            "Disconnect from Room",
+                            JOptionPane.YES_NO_OPTION);
+            //TODO
+        }
     }
 
     private void createRoom(ActionEvent e) {
-        //TODO
-        System.out.println("yep");
+        if (isConnected) {
+            String s = (String)JOptionPane.showInputDialog(
+                    this,
+                    "What is the name of the room you would like to create? (This must be unique)",
+                    "Create Room",
+                    JOptionPane.PLAIN_MESSAGE,
+                    null,
+                    null,
+                    "Ex. John's room");
+            //TODO
+        }
     }
 
     private void settings(ActionEvent e) {
-        //TODO
-        System.out.println("yep");
+        if (isConnected) {
+            //TODO
+        }
+    }
+
+     private void saveConversation(ActionEvent e) {
+        if (isConnected) {
+            //TODO
+        }
     }
 
     private void sendButtonHandler(ActionEvent e) {
-        String nothing = "";
-        String username = "jholliman"; //temporary var for testing
-        String messageText = inputTextArea.getText();
-        if ((inputTextArea.getText()).equals(nothing)) { //check for text
-            inputTextArea.setText("");
-            inputTextArea.requestFocus();
+        if (isConnected) {
+            String nothing = "";
+            String username = "jholliman"; //temporary var for testing
+            String messageText = inputTextArea.getText();
+            if ((inputTextArea.getText()).equals(nothing)) { //check for text
+                inputTextArea.setText("");
+                inputTextArea.requestFocus();
+            } else {
+                //TODO
+                //send message to server here
+                writeToWindow(username + ": " + messageText + "\n");
+                inputTextArea.setText("");
+                inputTextArea.requestFocus();
+            }
         } else {
-            //TODO
-            //send message to server here
-            chatTextArea.append(username + ": " + messageText + "\n");
-            inputTextArea.setText("");
-            inputTextArea.requestFocus();
+            writeToWindow("System Message: To connect navigate to Connect to Server in the menu or press ctrl-d (or command-d).\n");
         }
-
         inputTextArea.setText("");
         inputTextArea.requestFocus();
     }
+
+    //Main method
 
     public static void main(final String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
