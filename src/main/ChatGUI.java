@@ -101,7 +101,13 @@ public class ChatGUI extends JFrame {
     private JMenu fileMenu, editMenu, helpMenu;
     private JMenuItem jMenuItem1, jMenuItem2, jMenuItem3, jMenuItem4, jMenuItem5, jMenuItem6, jMenuItem7, jMenuItem8;
     private boolean isConnected = false;
-    
+    private final String startupMessage = "System Message: To connect to the chat server navigate to Connect to Server in the menu or press ctrl-d (or command-d on mac). " +
+                                          "Type \"--help\" in the box below to get a list of avaible commands.\n";
+    private final String helpCommands = "System Message: The available commands are as follows:\n" +
+                                        "1) \"--list_users_in_room\"\n" +
+                                        "2) \"--exit_room\"\n" +
+                                        "3) \"--exit_chat_client\"\n";
+
     /**
      * ChatGUI constructor
      * 
@@ -109,7 +115,7 @@ public class ChatGUI extends JFrame {
      */
     public ChatGUI() {
         initComponents();
-        writeToWindow("System Message: To connect navigate to Connect to Server in the menu or press ctrl-d (or command-d).\n");
+        writeToWindow(startupMessage);
     }
 
     private void initComponents() {
@@ -407,23 +413,31 @@ public class ChatGUI extends JFrame {
     }
 
     private void sendButtonHandler(ActionEvent e) {
-        if (isConnected) {
-            String nothing = "";
-            String username = "jholliman"; //temporary var for testing
-            String messageText = inputTextArea.getText();
-            if ((inputTextArea.getText()).equals(nothing)) { //check for text
-                inputTextArea.setText("");
-                inputTextArea.requestFocus();
-            } else {
-                //TODO
-                //send message to server here
-                writeToWindow(username + ": " + messageText + "\n");
-                inputTextArea.setText("");
-                inputTextArea.requestFocus();
-            }
+        String textEntered = inputTextArea.getText();
+        if (textEntered.equals("--help")) {
+            writeToWindow(helpCommands);
+        } else if (textEntered.equals("--list_users_in_room")) {
+            //TODO 
+            //as with the following two these commands will necessitate a Request object sent to the server
+        } else if (textEntered.equals("--exit_room")) {
+            //TODO
+        } else if (textEntered.equals("--exit_chat_client")) {
+            //TODO
         } else {
-            writeToWindow("System Message: To connect navigate to Connect to Server in the menu or press ctrl-d (or command-d).\n");
-        }
+            if (isConnected) {
+                String nothing = "";
+                String username = "jholliman"; //temporary var for testing
+
+                if (!textEntered.equals(nothing)) { //check for text
+                    //TODO
+                    //send message to server here
+                    writeToWindow(username + ": " + textEntered + "\n");
+                }
+            } else {
+                writeToWindow(startupMessage);
+            }
+        } 
+        //clear chat window and refocus
         inputTextArea.setText("");
         inputTextArea.requestFocus();
     }
