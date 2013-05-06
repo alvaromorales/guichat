@@ -77,6 +77,7 @@ class ChatSession {
                 for (Thread t: cw.getThreads()) t.join();
             }
         }
+        return false;
         
         //eliminate GUI pieces
         //TODO
