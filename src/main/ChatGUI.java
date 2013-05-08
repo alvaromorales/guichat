@@ -102,7 +102,6 @@ public class ChatGUI extends JFrame {
     private JMenuBar menuBar;
     private JMenu fileMenu, editMenu, helpMenu;
     private JMenuItem jMenuItem1, jMenuItem2, jMenuItem3, jMenuItem4, jMenuItem5, jMenuItem6, jMenuItem7, jMenuItem8;
-    private boolean isConnected = false;
     private final String startupMessage = "System Message: To connect to the chat server navigate to Connect to Server in the menu or press ctrl-d (or command-d on mac). " +
                                           "Type \"--help\" in the box below to get a list of avaible commands.\n";
     private final String helpCommands = "System Message: The available commands are as follows:\n" +
@@ -110,7 +109,8 @@ public class ChatGUI extends JFrame {
                                         "2) \"--exit_room\"\n" +
                                         "3) \"--exit_chat_client\"\n";
     //Server/client connection variables
-    private final String SERVER_NAME = "localhost"; //placeholder for now
+    private boolean isConnected = false;
+    private final String SERVER_NAME = "localhost";
     private final int SERVER_PORT = 4444;
     private Socket socket;
     private BufferedReader input = null;
@@ -351,6 +351,8 @@ public class ChatGUI extends JFrame {
         vertical.setValue(vertical.getMaximum());
     }
 
+    //Listener Methods
+
     private void connectToRoom(ActionEvent e) {
         if (isConnected) {
             Object[] possibilities = {"ham", "spam", "yam"}; //get the list of rooms
@@ -463,7 +465,7 @@ public class ChatGUI extends JFrame {
         }
     }
 
-     private void saveConversation(ActionEvent e) {
+    private void saveConversation(ActionEvent e) {
         if (isConnected) {
             //TODO
         }
@@ -502,7 +504,6 @@ public class ChatGUI extends JFrame {
     }
 
     //Main method
-
     public static void main(final String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
