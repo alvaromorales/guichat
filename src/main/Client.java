@@ -9,7 +9,7 @@ import java.net.Socket;
 public class Client {
 
     private static final String SERVER_NAME = "localhost"; //placeholder for now
-    private static final int SERVER_PORT = 9999; //placeholder for now
+    private static final int SERVER_PORT = 4444;
     private static BufferedReader input;
     private static PrintWriter output;
     private static ChatSession chatSession;
@@ -38,7 +38,7 @@ public class Client {
 
         //Create chat session instance
         //perhaps check to see if username is available here
-        chatSession = new ChatSession(output);
+        //chatSession = new ChatSession(output);
 
         try {
             //Read in responses from the server.

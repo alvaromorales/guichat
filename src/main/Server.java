@@ -1,14 +1,26 @@
 package main;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Chat server runner.
  */
 public class Server {
+
     private final ServerSocket serverSocket;
+    private static final int SERVER_PORT = 4444;
+    private final String serverErrorMessage = "Unable to connect. Try again and consider" + 
+                                              "using a different port number";
+    private final List usernames = Collections.synchronizedList(new ArrayList<ChatWindow>());
     
     /**
      * Creates a new server instance on the specified port
@@ -18,7 +30,7 @@ public class Server {
         try {
             serverSocket = new ServerSocket(port);
         } catch (IOException e) {
-            throw new RuntimeException("Unable to connect. Try again and consider using a different port number");
+            throw new RuntimeException(serverErrorMessage);
         }
     }
     
@@ -30,7 +42,13 @@ public class Server {
     public void serve() throws IOException {
         while(true) {
             Socket socket = serverSocket.accept();
-            Thread t = new Thread(new User(socket));
+            BufferedReader input = new BufferedReader(
+                                       new InputStreamReader(
+                                           socket.getInputStream()));
+            PrintWriter output = new PrintWriter(
+                                     new OutputStreamWriter(
+                                         socket.getOutputStream()));
+            Thread t = new Thread(new User(socket, input, output));
             t.run();
         }
     }
@@ -39,11 +57,10 @@ public class Server {
      * Start a chat server.
      */
     public static void main(String[] args) {
-        Server server = new Server(4444);
+        Server server = new Server(SERVER_PORT);
         try {
             server.serve();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }

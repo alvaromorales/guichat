@@ -4,7 +4,12 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.Socket;
 import java.net.URI;
 import java.net.URISyntaxException;
 import javax.swing.*;
@@ -104,6 +109,12 @@ public class ChatGUI extends JFrame {
                                         "1) \"--list_users_in_room\"\n" +
                                         "2) \"--exit_room\"\n" +
                                         "3) \"--exit_chat_client\"\n";
+    private static final String SERVER_NAME = "localhost"; //placeholder for now
+    private static final int SERVER_PORT = 4444;
+    private static BufferedReader input = null;
+    private static PrintWriter output = null;
+    private static ChatSession chatSession = null;
+    private String username;
 
     /**
      * ChatGUI constructor
@@ -328,6 +339,10 @@ public class ChatGUI extends JFrame {
         scrollToBottomOfChatWindow();
     }
 
+    private void clearWindow() {
+        chatTextArea.setText("");
+    }
+
     private void scrollToBottomOfChatWindow() {
         //scroll to the bottom of the scroll pane
         JScrollBar vertical = jScrollPane2.getVerticalScrollBar();
@@ -361,7 +376,10 @@ public class ChatGUI extends JFrame {
     }
 
     private void connectToServer(ActionEvent e) {
-        String s = (String)JOptionPane.showInputDialog(
+        if (isConnected) {
+            writeToWindow("System Message: You are already connected. Logout and log back in if you are looking to change username.");
+        } else {
+            String s = (String)JOptionPane.showInputDialog(
                 this,
                 "What would you like your nickname to be? (This must be unique)",
                 "Connect to Server",
@@ -369,7 +387,34 @@ public class ChatGUI extends JFrame {
                 null,
                 null,
                 "Ex. jholliman");
-        //TODO
+            try {
+                //Attempt to connect to the chat server
+                Socket socket = new Socket(SERVER_NAME, SERVER_PORT);
+                this.input = new BufferedReader(
+                                 new InputStreamReader(
+                                     socket.getInputStream()));
+                this.output = new PrintWriter(
+                                  new OutputStreamWriter(
+                                      socket.getOutputStream()));
+                //Alert of success for testing purposes
+                System.out.println("Connected to chat server at " + SERVER_NAME + ":" + SERVER_PORT + ".");
+                isConnected = true;
+                username = s;
+                clearWindow();
+            } catch (IOException e1) {
+                //Failure to connect
+                System.out.println("Failed to connect to chat server at " + SERVER_NAME + ":" + SERVER_PORT + " or broken socket.");
+                clearWindow();
+                writeToWindow("Failed to connect to chat server. Sorry!");
+            }
+
+            //Create chat session instance
+            //perhaps check to see if username is available here
+            //listen to output
+            //chatSession = new ChatSession(output);
+
+            //TODO
+        }  
     }
 
     private void disconnectFromServer(ActionEvent e) {
@@ -423,11 +468,12 @@ public class ChatGUI extends JFrame {
         } else {
             if (isConnected) {
                 String nothing = "";
-                String username = "jholliman"; //temporary var for testing
 
                 if (!textEntered.equals(nothing)) { //check for text
                     //TODO
                     //send message to server here
+                    output.write(username + ": " + textEntered + "\n");
+                    output.flush();
                     writeToWindow(username + ": " + textEntered + "\n");
                 }
             } else {
