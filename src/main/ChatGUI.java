@@ -109,11 +109,13 @@ public class ChatGUI extends JFrame {
                                         "1) \"--list_users_in_room\"\n" +
                                         "2) \"--exit_room\"\n" +
                                         "3) \"--exit_chat_client\"\n";
-    private static final String SERVER_NAME = "localhost"; //placeholder for now
-    private static final int SERVER_PORT = 4444;
-    private static BufferedReader input = null;
-    private static PrintWriter output = null;
-    private static ChatSession chatSession = null;
+    //Server/client connection variables
+    private final String SERVER_NAME = "localhost"; //placeholder for now
+    private final int SERVER_PORT = 4444;
+    private Socket socket;
+    private BufferedReader input = null;
+    private PrintWriter output = null;
+    private ChatSession chatSession = null;
     private String username;
 
     /**
@@ -389,7 +391,7 @@ public class ChatGUI extends JFrame {
                 "Ex. jholliman");
             try {
                 //Attempt to connect to the chat server
-                Socket socket = new Socket(SERVER_NAME, SERVER_PORT);
+                this.socket = new Socket(SERVER_NAME, SERVER_PORT);
                 this.input = new BufferedReader(
                                  new InputStreamReader(
                                      socket.getInputStream()));
@@ -421,10 +423,23 @@ public class ChatGUI extends JFrame {
         if (isConnected) {
             int n = JOptionPane.showConfirmDialog(
                             this,
-                            "Are you sure that you would like to disconnect? All chats will be closed and the associated histories will be deleted.",
+                            "Are you sure that you would like to disconnect?\nAll chats will be closed and the associated histories will be deleted.",
                             "Disconnect from Room",
                             JOptionPane.YES_NO_OPTION);
-            //TODO
+            if (n == 0) { //yes
+                //TODO join any threads that may exist in ChatSession
+                isConnected = false;
+                try {
+                    socket.close();
+                    input = null;
+                    output = null;
+                    username = null;
+                    clearWindow();
+                    writeToWindow("You have been successfully disconnected from the server.\n");
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
         }
     }
 
@@ -464,7 +479,8 @@ public class ChatGUI extends JFrame {
         } else if (textEntered.equals("--exit_room")) {
             //TODO
         } else if (textEntered.equals("--exit_chat_client")) {
-            //TODO
+            disconnectFromServer(e);
+            System.exit(0);
         } else {
             if (isConnected) {
                 String nothing = "";
