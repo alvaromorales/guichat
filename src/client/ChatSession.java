@@ -1,10 +1,10 @@
-package main;
+package client;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
+import protocol.Message;
 
 /**
  * Creates a chat session with the server

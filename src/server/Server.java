@@ -1,4 +1,4 @@
-package main;
+package server;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -20,7 +20,7 @@ public class Server {
     private static final int SERVER_PORT = 4444;
     private final String serverErrorMessage = "Unable to connect. Try again and consider" + 
                                               "using a different port number";
-    private final List usernames = Collections.synchronizedList(new ArrayList<ChatWindow>());
+    private final List usernames = Collections.synchronizedList(new ArrayList<String>());
     
     /**
      * Creates a new server instance on the specified port
