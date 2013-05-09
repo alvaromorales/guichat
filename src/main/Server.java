@@ -1,4 +1,4 @@
-package server;
+package main;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,6 +11,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import protocol.Request;
+import server.User;
 
 /**
  * Chat server runner.

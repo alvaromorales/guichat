@@ -1,7 +1,8 @@
-package client;
+package main;
 
 import java.io.*;
 import java.net.Socket;
+import client.ChatSession;
 
 /**
  * GUI chat client runner.

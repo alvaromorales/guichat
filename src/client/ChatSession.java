@@ -9,7 +9,7 @@ import protocol.Message;
 /**
  * Creates a chat session with the server
  */
-class ChatSession {
+public class ChatSession {
     PrintWriter output;
     List<ChatWindow> chatWindows;
 
