@@ -1,4 +1,4 @@
-package main;
+package protocol;
 
 /**
  * This is a marker interface.

@@ -1,13 +1,14 @@
-package main;
+package client;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import protocol.Message;
 
 /**
  * Creates a chat window inside of chat session
  */
-class ChatWindow {
+public class ChatWindow {
     private final String name;
     private List<Message> messages;
     private List<Thread> chatWindowThreads;
