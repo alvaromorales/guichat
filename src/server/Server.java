@@ -7,9 +7,10 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+
+import protocol.Request;
 
 /**
  * Chat server runner.
@@ -18,9 +19,10 @@ public class Server {
 
     private final ServerSocket serverSocket;
     private static final int SERVER_PORT = 4444;
-    private final String serverErrorMessage = "Unable to connect. Try again and consider" + 
-                                              "using a different port number";
-    private final List usernames = Collections.synchronizedList(new ArrayList<String>());
+    private final String serverErrorMessage = "Unable to connect to port " + SERVER_PORT + ". " +
+                                              "Try again and consider using a different port number";
+    private BlockingQueue<Request> requestQueue;
+//    private final List usernames = Collections.synchronizedList(new ArrayList<String>());
     
     /**
      * Creates a new server instance on the specified port
@@ -29,6 +31,7 @@ public class Server {
     public Server(int port) {
         try {
             serverSocket = new ServerSocket(port);
+            requestQueue = new LinkedBlockingQueue<Request>();
         } catch (IOException e) {
             throw new RuntimeException(serverErrorMessage);
         }
@@ -48,7 +51,7 @@ public class Server {
             PrintWriter output = new PrintWriter(
                                      new OutputStreamWriter(
                                          socket.getOutputStream()));
-            Thread t = new Thread(new User(socket, input, output));
+            Thread t = new Thread(new User(socket, input, output, requestQueue));
             t.run();
         }
     }
