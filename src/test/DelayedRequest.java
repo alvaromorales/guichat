@@ -4,7 +4,7 @@ import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
 import protocol.Request;
 
-public class DelayedRequest implements Delayed, Request {
+public class DelayedRequest implements Request, Delayed {
     private Request request;
     private long delay;
     

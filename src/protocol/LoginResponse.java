@@ -3,14 +3,14 @@ package protocol;
 /**
  * Represents a Login request or response
  */
-public class Login implements Request, Response {
+public class LoginResponse implements Response {
     private String username;
     
     /**
-     * Creates a new Login object
+     * Creates a new LoginResponse object
      * @param username the username part of the request/response
      */
-    public Login(String username) {
+    public LoginResponse(String username) {
         this.username = username;
     }
 
@@ -23,16 +23,16 @@ public class Login implements Request, Response {
     }
         
     /**
-     * Gets the String representation of a Login object
-     * @return the String representation of a Login object
+     * Gets the String representation of a LoginResponse object
+     * @return the String representation of a LoginResponse object
      */
     @Override
     public String toString() {
-        return "Login [username=" + username + "]";
+        return "LoginResponse [username=" + username + "]";
     }
 
     /**
-     * Checks if a Login object is equal to another Object
+     * Checks if a LoginResponse object is equal to another Object
      * @param obj the object to compare
      * @return true if equals, else false
      */
@@ -44,7 +44,7 @@ public class Login implements Request, Response {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        Login other = (Login) obj;
+        LoginResponse other = (LoginResponse) obj;
         if (username == null) {
             if (other.username != null)
                 return false;

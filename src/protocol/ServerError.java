@@ -5,7 +5,7 @@ package protocol;
  */
 public class ServerError implements Response {
     private String error;
-    private Type type;
+    private Type errorType;
 
     /**
      * Types of server errors
@@ -21,7 +21,7 @@ public class ServerError implements Response {
      * @param error the error to send to the client
      */
     public ServerError(Type type, String error) {
-        this.type = type;
+        this.errorType = type;
         this.error = error;
     }
 
@@ -30,7 +30,7 @@ public class ServerError implements Response {
      * @return the server error type
      */
     public Type getType() {
-        return type;
+        return errorType;
     }
     
     /**
@@ -47,7 +47,7 @@ public class ServerError implements Response {
      */
     @Override
     public String toString() {
-        return "ServerError [type=" + type + ", error=" + error + "]";
+        return "ServerError [errorType=" + errorType + ", error=" + error + "]";
     }
     
 }

@@ -6,11 +6,13 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.DelayQueue;
-
 import com.google.gson.Gson;
-import protocol.Login;
+import com.google.gson.GsonBuilder;
+import protocol.InterfaceAdapter;
+import protocol.LoginRequest;
 import protocol.Request;
 import protocol.Response;
 
@@ -23,8 +25,7 @@ public class RequestTester implements Runnable {
     private final int SERVER_PORT = 4444;
     private BufferedReader input;
     private PrintWriter output;    
-    private Gson requestGson;
-    private Gson responseGson;
+    private Gson gson;
     private List<Response> responseList;
     private Thread requestSender;
     private int expectedResponses;
@@ -40,7 +41,7 @@ public class RequestTester implements Runnable {
         public void run() {
             DelayedRequest request;
             while((request = requestQueue.poll()) != null) {
-                sendRequest(request);
+                sendRequest(request.getRequest());
             }
         }
 
@@ -55,6 +56,9 @@ public class RequestTester implements Runnable {
     public RequestTester(String username, DelayQueue<DelayedRequest> requests, int expectedResponses) {
         try {
             this.expectedResponses = expectedResponses;
+            this.gson = new GsonBuilder().registerTypeAdapter(Request.class, new InterfaceAdapter<Request>()).registerTypeAdapter(Response.class, new InterfaceAdapter<Response>()).create();
+            this.responseList = new ArrayList<Response>();
+            
             //Attempt to connect to the chat server
             Socket socket = new Socket(SERVER_NAME, SERVER_PORT);
 
@@ -65,10 +69,13 @@ public class RequestTester implements Runnable {
                     new OutputStreamWriter(
                             socket.getOutputStream()));
 
-            Request login = new Login(username);
-            sendRequest(login);
-
-            requestSender = new Thread(new RequestSender(requests));
+            Request login = new LoginRequest(username);
+            
+            DelayQueue<DelayedRequest> allRequests = new DelayQueue<DelayedRequest>();
+            allRequests.add(new DelayedRequest(login, 0));
+            allRequests.addAll(requests);
+            
+            requestSender = new Thread(new RequestSender(allRequests));
 
         } catch (IOException e) {
             //Failure to connect
@@ -83,7 +90,8 @@ public class RequestTester implements Runnable {
      * @param r the request to send
      */
     public void sendRequest(Request r) {
-        output.println(requestGson.toJson(r));
+        System.out.println("Sending request");
+        output.println(gson.toJson(r));
         output.flush();
     }
 
@@ -95,7 +103,8 @@ public class RequestTester implements Runnable {
             for (int i=0;i<expectedResponses;i++) {
                 String serverResponse = input.readLine();
                 if (serverResponse != null) {
-                    Response r = responseGson.fromJson(serverResponse, Response.class);
+                    System.out.println(serverResponse);
+                    Response r = gson.fromJson(serverResponse, Response.class);
                     responseList.add(r);
                 }
             }

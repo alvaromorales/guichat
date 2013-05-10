@@ -55,7 +55,7 @@ public class Server {
             PrintWriter output = new PrintWriter(
                                      new OutputStreamWriter(
                                          socket.getOutputStream()));
-            Thread t = new Thread(new User(socket, input, output, requestQueue, usernames));
+            Thread t = new Thread(new User(input, output, requestQueue, usernames));
             t.start();
         }
     }
