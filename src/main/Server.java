@@ -7,6 +7,9 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -23,7 +26,7 @@ public class Server {
     private final String serverErrorMessage = "Unable to connect to port " + SERVER_PORT + ". " +
                                               "Try again and consider using a different port number";
     private BlockingQueue<Request> requestQueue;
-//    private final List usernames = Collections.synchronizedList(new ArrayList<String>());
+    private Set<String> usernames = Collections.synchronizedSet(new HashSet<String>());
     
     /**
      * Creates a new server instance on the specified port
@@ -52,7 +55,7 @@ public class Server {
             PrintWriter output = new PrintWriter(
                                      new OutputStreamWriter(
                                          socket.getOutputStream()));
-            Thread t = new Thread(new User(socket, input, output, requestQueue));
+            Thread t = new Thread(new User(socket, input, output, requestQueue, usernames));
             t.start();
         }
     }

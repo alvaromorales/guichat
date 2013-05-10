@@ -14,6 +14,16 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import javax.swing.*;
 
+import main.Client;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import protocol.InterfaceAdapter;
+import protocol.Login;
+import protocol.Request;
+import protocol.Response;
+
 /**
  * Testing Strategy:
  *
@@ -103,11 +113,11 @@ public class ChatGUI extends JFrame {
     private JMenu fileMenu, editMenu, helpMenu;
     private JMenuItem jMenuItem1, jMenuItem2, jMenuItem3, jMenuItem4, jMenuItem5, jMenuItem6, jMenuItem7, jMenuItem8;
     private final String startupMessage = "System Message: To connect to the chat server navigate to Connect to Server in the menu or press ctrl-d (or command-d on mac). " +
-                                          "Type \"--help\" in the box below to get a list of avaible commands.\n";
+            "Type \"--help\" in the box below to get a list of avaible commands.\n";
     private final String helpCommands = "System Message: The available commands are as follows:\n" +
-                                        "1) \"--list_users_in_room\"\n" +
-                                        "2) \"--exit_room\"\n" +
-                                        "3) \"--exit_chat_client\"\n";
+            "1) \"--list_users_in_room\"\n" +
+            "2) \"--exit_room\"\n" +
+            "3) \"--exit_chat_client\"\n";
     //Server/client connection variables
     private boolean isConnected = false;
     private final String SERVER_NAME = "localhost";
@@ -118,13 +128,24 @@ public class ChatGUI extends JFrame {
     private ChatSession chatSession = null;
     private String username;
 
+    // Code added to send a login request
+    // move to Client?
+    private Gson requestGson;
+
+
     /**
      * ChatGUI constructor
      * 
      * calls initComponents() to create gui
      */
-    public ChatGUI() {
+    public ChatGUI(BufferedReader input, PrintWriter output) {
         initComponents();
+
+        //Code added to send a login request
+        this.requestGson = new GsonBuilder().registerTypeAdapter(Request.class, new InterfaceAdapter<Request>()).create();
+        this.input = input;
+        this.output = output;
+
         writeToWindow(startupMessage);
     }
 
@@ -170,7 +191,7 @@ public class ChatGUI extends JFrame {
             }
         });
         jScrollPane1.setViewportView(inputTextArea);
-        
+
 
         //area to display messages
         chatTextArea.setColumns(20);
@@ -290,45 +311,45 @@ public class ChatGUI extends JFrame {
         GroupLayout layout = new GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-                    .addComponent(messageLabel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addGap(4, 4, 4)
-                        .addComponent(jScrollPane1, GroupLayout.PREFERRED_SIZE, 336, GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(sendButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(jScrollPane2, GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 419, GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                        .addGap(18, 18, 18)))
-                .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                    .addComponent(avaiableChatRoomsLabel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane3))
-                .addContainerGap())
-        );
+                layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                .addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+                                .addComponent(messageLabel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                        .addGap(4, 4, 4)
+                                        .addComponent(jScrollPane1, GroupLayout.PREFERRED_SIZE, 336, GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(sendButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                        .addComponent(jScrollPane2, GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 419, GroupLayout.PREFERRED_SIZE)
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+                                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                                .addGap(18, 18, 18)))
+                                                .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+                                                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                                                        .addComponent(avaiableChatRoomsLabel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                        .addComponent(jScrollPane3))
+                                                        .addContainerGap())
+                );
         layout.setVerticalGroup(
-            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                    .addComponent(messageLabel)
-                    .addComponent(avaiableChatRoomsLabel))
-                .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING, false)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane2, GroupLayout.PREFERRED_SIZE, 261, GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(sendButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jScrollPane1, GroupLayout.DEFAULT_SIZE, 69, Short.MAX_VALUE)))
-                    .addComponent(jScrollPane3))
-                .addContainerGap())
-        );
+                layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                                .addComponent(messageLabel)
+                                .addComponent(avaiableChatRoomsLabel))
+                                .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING, false)
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addComponent(jScrollPane2, GroupLayout.PREFERRED_SIZE, 261, GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING, false)
+                                                        .addComponent(sendButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                        .addComponent(jScrollPane1, GroupLayout.DEFAULT_SIZE, 69, Short.MAX_VALUE)))
+                                                        .addComponent(jScrollPane3))
+                                                        .addContainerGap())
+                );
 
         //size window properly
         pack();
@@ -357,13 +378,13 @@ public class ChatGUI extends JFrame {
         if (isConnected) {
             Object[] possibilities = {"ham", "spam", "yam"}; //get the list of rooms
             String s = (String)JOptionPane.showInputDialog(
-                                this,
-                                "What room would you like to join?",
-                                "Connect to Room",
-                                JOptionPane.PLAIN_MESSAGE,
-                                null,
-                                possibilities,
-                                possibilities[0]);
+                    this,
+                    "What room would you like to join?",
+                    "Connect to Room",
+                    JOptionPane.PLAIN_MESSAGE,
+                    null,
+                    possibilities,
+                    possibilities[0]);
             //TODO
         }
     }
@@ -371,10 +392,10 @@ public class ChatGUI extends JFrame {
     private void disconnectFromRoom(ActionEvent e) {
         if (isConnected) {
             int n = JOptionPane.showConfirmDialog(
-                            this,
-                            "Are you sure that you want to leave this room?",
-                            "Disconnect from Room",
-                            JOptionPane.YES_NO_OPTION);
+                    this,
+                    "Are you sure that you want to leave this room?",
+                    "Disconnect from Room",
+                    JOptionPane.YES_NO_OPTION);
             //TODO
         }
     }
@@ -384,33 +405,22 @@ public class ChatGUI extends JFrame {
             writeToWindow("System Message: You are already connected. Logout and log back in if you are looking to change username.");
         } else {
             String s = (String)JOptionPane.showInputDialog(
-                this,
-                "What would you like your nickname to be? (This must be unique)",
-                "Connect to Server",
-                JOptionPane.PLAIN_MESSAGE,
-                null,
-                null,
-                "Ex. jholliman");
-            try {
-                //Attempt to connect to the chat server
-                this.socket = new Socket(SERVER_NAME, SERVER_PORT);
-                this.input = new BufferedReader(
-                                 new InputStreamReader(
-                                     socket.getInputStream()));
-                this.output = new PrintWriter(
-                                  new OutputStreamWriter(
-                                      socket.getOutputStream()));
-                //Alert of success for testing purposes
-                System.out.println("Connected to chat server at " + SERVER_NAME + ":" + SERVER_PORT + ".");
-                isConnected = true;
-                username = s;
-                clearWindow();
-            } catch (IOException e1) {
-                //Failure to connect
-                System.out.println("Failed to connect to chat server at " + SERVER_NAME + ":" + SERVER_PORT + " or broken socket.");
-                clearWindow();
-                writeToWindow("Failed to connect to chat server. Sorry!");
-            }
+                    this,
+                    "What would you like your nickname to be? (This must be unique)",
+                    "Connect to Server",
+                    JOptionPane.PLAIN_MESSAGE,
+                    null,
+                    null,
+                    "Ex. jholliman");
+            
+            isConnected = true;
+
+            Request loginRequest = new Login(s);
+            output.println(requestGson.toJson(loginRequest));
+            output.flush();
+
+            username = s;
+            clearWindow();
 
             //Create chat session instance
             //perhaps check to see if username is available here
@@ -424,10 +434,10 @@ public class ChatGUI extends JFrame {
     private void disconnectFromServer(ActionEvent e) {
         if (isConnected) {
             int n = JOptionPane.showConfirmDialog(
-                            this,
-                            "Are you sure that you would like to disconnect?\nAll chats will be closed and the associated histories will be deleted.",
-                            "Disconnect from Room",
-                            JOptionPane.YES_NO_OPTION);
+                    this,
+                    "Are you sure that you would like to disconnect?\nAll chats will be closed and the associated histories will be deleted.",
+                    "Disconnect from Room",
+                    JOptionPane.YES_NO_OPTION);
             if (n == 0) { //yes
                 //TODO join any threads that may exist in ChatSession
                 isConnected = false;
@@ -503,13 +513,4 @@ public class ChatGUI extends JFrame {
         inputTextArea.requestFocus();
     }
 
-    //Main method
-    public static void main(final String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                ChatGUI main = new ChatGUI();
-                main.setVisible(true);
-            }
-        });
-    }
 }

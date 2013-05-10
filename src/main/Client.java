@@ -2,6 +2,10 @@ package main;
 
 import java.io.*;
 import java.net.Socket;
+
+import javax.swing.SwingUtilities;
+
+import client.ChatGUI;
 import client.ChatSession;
 
 /**
@@ -9,25 +13,27 @@ import client.ChatSession;
  */
 public class Client {
 
-    private static final String SERVER_NAME = "localhost"; //placeholder for now
-    private static final int SERVER_PORT = 4444;
-    private static BufferedReader input;
-    private static PrintWriter output;
-    private static ChatSession chatSession;
+    private final String SERVER_NAME = "localhost"; //placeholder for now
+    private final int SERVER_PORT = 4444;
+    public BufferedReader input;
+    public PrintWriter output;
+    private ChatSession chatSession;
 
     /**
      * Start a GUI chat client.
      */
-    public static void main(String[] args) {
+    public Client() {
         try {
             //Attempt to connect to the chat server
             Socket socket = new Socket(SERVER_NAME, SERVER_PORT);
+            
             input = new BufferedReader(
-                        new InputStreamReader(
-                            socket.getInputStream()));
+                    new InputStreamReader(
+                        socket.getInputStream()));
             output = new PrintWriter(
-                         new OutputStreamWriter(
-                             socket.getOutputStream()));
+                  new OutputStreamWriter(
+                      socket.getOutputStream()));
+            
             //Alert of success for testing purposes
             System.out.println("Connected to chat server at " + SERVER_NAME + ":" + SERVER_PORT + ".");
         } catch (IOException e) {
@@ -36,25 +42,17 @@ public class Client {
             System.out.println("Failed to connect to chat server at " + SERVER_NAME + ":" + SERVER_PORT + " or broken socket.");
             System.exit(-1);
         }
-
+        
         //Create chat session instance
         //perhaps check to see if username is available here
         //chatSession = new ChatSession(output);
-
-        try {
-            //Read in responses from the server.
-            listen();
-        } catch (IOException e) {
-            System.out.println("Socket broken.");
-            e.printStackTrace();
-        }
     }
 
     /**
      * Listen for responses from the server.
      * @throws IOException if the server socket is broken
      */
-    private static void listen() throws IOException {
+    private void listen() throws IOException {
         //Types of responses (both success and failure):
         // - login 
         // - joining a chatroom
@@ -68,5 +66,28 @@ public class Client {
             //will be route to a response handler in the future
             System.out.println(serverResponse);
         }
+    }
+    
+    /**
+     * Runs the client
+     */
+    public static void main(String[] args) {
+        final Client client = new Client();
+        
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                ChatGUI main = new ChatGUI(client.input,client.output);
+                main.setVisible(true);
+            }
+        });
+        
+        try {
+            //Read in responses from the server.
+            client.listen();
+        } catch (IOException e) {
+            System.out.println("Socket broken.");
+            e.printStackTrace();
+        }
+        
     }
 }
