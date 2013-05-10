@@ -53,7 +53,7 @@ public class Server {
                                      new OutputStreamWriter(
                                          socket.getOutputStream()));
             Thread t = new Thread(new User(socket, input, output, requestQueue));
-            t.run();
+            t.start();
         }
     }
     
