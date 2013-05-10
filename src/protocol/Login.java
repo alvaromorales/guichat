@@ -30,4 +30,28 @@ public class Login implements Request, Response {
     public String toString() {
         return "Login [username=" + username + "]";
     }
+
+    /**
+     * Checks if a Login object is equal to another Object
+     * @param obj the object to compare
+     * @return true if equals, else false
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Login other = (Login) obj;
+        if (username == null) {
+            if (other.username != null)
+                return false;
+        } else if (!username.equals(other.username))
+            return false;
+        return true;
+    }
+    
+    
 }
