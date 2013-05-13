@@ -70,4 +70,14 @@ public class ChatRoom {
             return usersInRoom.size() == 0;
         }
     }
+    
+    /**
+     * Gets the list of users in the room
+     * @return the list of users in the room
+     */
+    public synchronized List<String> getUsers() {
+        synchronized (usersInRoom) {
+            return new ArrayList<String>(usersInRoom);
+        }
+    }
 }
