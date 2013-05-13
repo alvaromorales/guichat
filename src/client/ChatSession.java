@@ -6,9 +6,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
 import com.google.gson.Gson;
@@ -28,7 +29,7 @@ import protocol.SendMessageRequest;
 public class ChatSession {
     PrintWriter output;
     BufferedReader input;
-    List<ChatWindow> chatWindows;
+    Map<String, ChatWindow> chatWindows;
     List<String> avaibleChatRooms;
     BlockingQueue<Response> responseQueue;
     Thread responseListener;
@@ -47,7 +48,7 @@ public class ChatSession {
             this.input = new BufferedReader(
                     new InputStreamReader(
                         socket.getInputStream()));
-            this.chatWindows = Collections.synchronizedList(new ArrayList<ChatWindow>());
+            this.chatWindows = Collections.synchronizedMap(new HashMap<String, ChatWindow>());
             //create and run the responseHandler thread
             this.responseHandler = new Thread(new ResponseHandler(this));
             this.responseHandler.start();
@@ -60,11 +61,21 @@ public class ChatSession {
     }
 
     public synchronized void addChatWindow(ChatWindow c) {
-        chatWindows.add(c);
+        chatWindows.put(c.getName(),c);
+        //TODO modify GUI as appropriate
     }
 
     public synchronized void removeChatWindow(ChatWindow c) {
-        chatWindows.remove(c);
+        chatWindows.remove(c.getName());
+        //TODO modify GUI as appropriate
+    }
+
+    public Map<String, ChatWindow> getChatWindows() {
+        return chatWindows;
+    }
+
+    public String getUsername() {
+        return username;
     }
 
     /**

@@ -494,7 +494,7 @@ public class ChatGUI extends JFrame {
         } else {
             if (isConnected) {
                 String nothing = "";
-                Message m = new SimpleMessage(textEntered, new Timestamp((new Date()).getTime()), username);
+                Message m = new SimpleMessage(textEntered, new Timestamp((new Date()).getTime()), username, currentChatWindow.getName());
                 if (!textEntered.equals(nothing)) { //check for text
                     chatSession.sendMessage(currentChatWindow, m);//chat session will write to the window
                     //writeToWindow(username + ": " + textEntered + "\n");

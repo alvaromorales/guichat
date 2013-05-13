@@ -4,8 +4,11 @@ import protocol.Registration.LoginResponse;
 import protocol.Response;
 import protocol.RoomResponse.JoinedRoomResponse;
 import protocol.RoomResponse.LeftRoomResponse;
+import protocol.SendMessageRequest;
 import protocol.ServerErrorResponse.Type;
 import protocol.ServerErrorResponse;
+import protocol.UserJoinOrLeaveRoomResponse;
+import protocol.UsersInRoomResponse;
 
 /**
  * Represents a RequestHandler thread
@@ -38,17 +41,16 @@ public class ResponseHandler implements Runnable {
 
         @Override
         public Void visit(JoinedRoomResponse response) {
-          //create chat window
+            //create chat window
             ChatWindow c = new ChatWindow(response.getRoomName());
             //add window to session
             session.addChatWindow(c);
-            //TODO modify GUI as appropriate
             return null;
         }
 
         @Override
         public Void visit(LeftRoomResponse response) {
-         // TODO Auto-generated method stub
+            //TODO
             return null;
         }
 
@@ -59,6 +61,35 @@ public class ResponseHandler implements Runnable {
                                           "The username you requested is taken.");
             } else if (response.getType().equals(Type.UNAUTHORIZED)) {
                 session.gui.writeToWindow("System Message: " + response.getError());
+            }
+            return null;
+        }
+
+        @Override
+        public Void visit(SendMessageRequest response) {
+            if (!response.getUsername().equals(session.getUsername())) { //ensure the message wasn't sent by you
+                //add the message and render it in the gui if the 
+                //chat window is the current window
+                //otherwise adjust the table on the right of the gui
+                session.getChatWindows().get(response.getRoomName()).addMessage(response.getMessage(),session.gui);
+            }
+            return null;
+        }
+
+        @Override
+        public Void visit(UsersInRoomResponse response) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        @Override
+        public Void visit(UserJoinOrLeaveRoomResponse response) {
+            ChatWindow c = session.getChatWindows().get(response.getRoomName());
+            String username = response.getUsername();
+            if (response.isJoining()) { //joining room
+                c.addUser(username);
+            } else { //exiting room
+                c.removeUser(username);
             }
             return null;
         }

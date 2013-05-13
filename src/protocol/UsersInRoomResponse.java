@@ -2,6 +2,8 @@ package protocol;
 
 import java.util.List;
 
+import client.ClientVisitor;
+
 /**
  * Represents a response detailing the usernames of the connected users in a room
  */
@@ -33,6 +35,11 @@ public class UsersInRoomResponse implements Response {
      */
     public List<String> getUsers() {
         return users;
+    }
+
+    @Override
+    public <E> E accept(ClientVisitor<E> v) {
+        return v.visit(this);
     }
     
     

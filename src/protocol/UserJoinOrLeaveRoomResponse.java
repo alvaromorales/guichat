@@ -1,25 +1,24 @@
 package protocol;
 
 import client.ClientVisitor;
-import server.Visitor;
 
 /**
- * Represents a SendMessageRequest
+ * Represents a UserJoinOrLeaveRoomResponse
  */
-public class SendMessageRequest implements Request, Response {
+public class UserJoinOrLeaveRoomResponse implements Response {
     private String username;
     private String roomName;
-    private Message message;
+    private boolean joining;
 
     /**
-     * Creates a new SendMessageRequest object
+     * Creates a new UserJoinOrLeaveRoomResponse object
      * @param username the username of the user of the request/response
      * @param roomName the name of the room
      */
-    public SendMessageRequest(String username, String roomName, Message message) {
+    public UserJoinOrLeaveRoomResponse(String username, String roomName, boolean joining) {
         this.username = username;
         this.roomName = roomName;
-        this.message = message;
+        this.joining = joining;
     }
 
     /**
@@ -42,31 +41,31 @@ public class SendMessageRequest implements Request, Response {
      * Gets the message
      * @return the message
      */
-    public Message getMessage() {
-        return message;
+    public boolean isJoining() {
+        return joining;
     }
     
     /**
-     * Gets the string representation of the SendMessageRequest object
-     * @return the string representation of the SendMessageRequest object
+     * Gets the string representation of the UserJoinOrLeaveRoomResponse object
+     * @return the string representation of the UserJoinOrLeaveRoomResponse object
      */
     @Override
     public String toString() {
             return "username=" + username + 
                    ", roomName=" + roomName +
-                   ", message=" + message;
+                   ", joining=" + joining;
     }
 
     /**
      * Accepts a visitor
      */
     @Override
-    public <E> E accept(Visitor<E> v) {
+    public <E> E accept(ClientVisitor<E> v) {
         return v.visit(this);
     }
 
     /**
-     * Checks if a SendMessageRequest object is equal to another object
+     * Checks if a UserJoinOrLeaveRoomResponse object is equal to another object
      * @param obj the object to compare to
      * @return true if equal, else false
      */
@@ -75,7 +74,7 @@ public class SendMessageRequest implements Request, Response {
         if (this == obj) return true;
         if (obj == null) return false;
         if (getClass() != obj.getClass()) return false;
-        SendMessageRequest other = (SendMessageRequest) obj;
+        UserJoinOrLeaveRoomResponse other = (UserJoinOrLeaveRoomResponse) obj;
         if (getRoomName() == null) {
             if (other.getRoomName() != null)
                 return false;
@@ -86,16 +85,9 @@ public class SendMessageRequest implements Request, Response {
                 return false;
         } else if (!getUsername().equals(other.getUsername()))
             return false;
-        if (getMessage() == null) {
-            if (other.getMessage() != null)
-                return false;
-        } else if (!getMessage().equals(other.getMessage()))
+        if (isJoining() != other.isJoining()) {
             return false;
+        }
         return true;
-    }
-
-    @Override
-    public <E> E accept(ClientVisitor<E> v) {
-        return v.visit(this);
     }
 }

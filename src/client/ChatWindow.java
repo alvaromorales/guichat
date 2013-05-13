@@ -24,15 +24,19 @@ public class ChatWindow {
 
     public synchronized void addMessage(Message m, ChatGUI gui) {
         this.messages.add(m);
+        //TODO provide logic for updating the correct things
+        //depending what the current chat window is
         gui.writeToWindow(m.getUsername() + ":" + m.getMessage());
     }
 
     public synchronized void addUser(String username) {
         this.users.add(username);
+        //TODO update gui
     }
 
     public synchronized void removeUser(String username) {
         this.users.remove(username);
+        //TODO update gui
     }
 
     public synchronized List<Message> getMessages() {
