@@ -3,7 +3,11 @@ package test;
 import java.io.IOException;
 import main.Server;
 
-public class ServerTest {
+/**
+ * Abstract class with helper methods for server testing
+ * @category no_didit
+ */
+public abstract class ServerTest {
     public final int SERVER_PORT = 4444;
     
     /**

@@ -44,6 +44,9 @@ public class User implements Runnable {
         this.running = new AtomicBoolean(true);
     }
 
+    /**
+     * Runs the server
+     */
     @Override
     public void run() {
         login();
@@ -103,7 +106,7 @@ public class User implements Runnable {
      * Sends a response to the user
      * @param response the response to send
      */
-    public void sendResponse(Response response) {
+    public synchronized void sendResponse(Response response) {
         output.println(gson.toJson(response,Response.class));
         output.flush();
     }
