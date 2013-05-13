@@ -30,31 +30,9 @@ public class Registration {
      */
     @Override
     public String toString() {
-        return "Registration [username=" + username + "]";
+        return "username=" + username;
     }
-
-    /**
-     * Checks if a Registration object is equal to another Object
-     * @param obj the object to compare
-     * @return true if equals, else false
-     */
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        Registration other = (Registration) obj;
-        if (username == null) {
-            if (other.username != null)
-                return false;
-        } else if (!username.equals(other.username))
-            return false;
-        return true;
-    } 
-    
+  
     /**
      * Represents a LoginRequest
      */
@@ -70,13 +48,47 @@ public class Registration {
 
         /**
          * Accepts a visitor
+         * Never called
          */
         @Override
         public <E> E accept(Visitor<E> v) {
             return null;
         }
+        
+        /**
+         * Checks if a LoginRequest object is equal to another Object
+         * @param obj the object to compare
+         * @return true if equals, else false
+         */
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            LoginRequest other = (LoginRequest) obj;
+            if (getUsername() == null) {
+                if (other.getUsername() != null)
+                    return false;
+            } else if (!getUsername().equals(other.getUsername()))
+                return false;
+            return true;
+        }
+
+        /**
+         * Gets the String representation of a LoginRequest object
+         */
+        @Override
+        public String toString() {
+            return "LoginRequest [" + super.toString() + "]";
+        }
     }
     
+    /**
+     * Represents a LogoutRequest
+     */
     public static class LogoutRequest extends Registration implements Request {
 
         /**
@@ -93,9 +105,43 @@ public class Registration {
         @Override
         public <E> E accept(Visitor<E> v) {
             return v.visit(this);
+        }
+                
+        /**
+         * Checks if a LogoutRequest object is equal to another Object
+         * @param obj the object to compare
+         * @return true if equals, else false
+         */
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            LogoutRequest other = (LogoutRequest) obj;
+            if (getUsername() == null) {
+                if (other.getUsername() != null)
+                    return false;
+            } else if (!getUsername().equals(other.getUsername()))
+                return false;
+            return true;
         } 
+        
+        /**
+         * Gets the String representation of a LogoutRequest object
+         */
+        @Override
+        public String toString() {
+            return "LogoutRequest [" + super.toString() + "]";
+        }
+        
     }
     
+    /**
+     * Represents a LoginResponse
+     */
     public static class LoginResponse extends Registration implements Response {
 
         /**
@@ -104,6 +150,36 @@ public class Registration {
          */
         public LoginResponse(String username) {
             super(username);
+        }
+        
+        /**
+         * Checks if a LoginResponse object is equal to another Object
+         * @param obj the object to compare
+         * @return true if equals, else false
+         */
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            LoginResponse other = (LoginResponse) obj;
+            if (getUsername() == null) {
+                if (other.getUsername() != null)
+                    return false;
+            } else if (!getUsername().equals(other.getUsername()))
+                return false;
+            return true;
+        }
+        
+        /**
+         * Gets the String representation of a LoginResponse object
+         */
+        @Override
+        public String toString() {
+            return "LoginResponse [" + super.toString() + "]";
         }
     }
 }

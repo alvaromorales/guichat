@@ -1,29 +1,22 @@
 package test;
 
 import static org.junit.Assert.*;
-
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.DelayQueue;
-
 import org.junit.Test;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
 import protocol.InterfaceAdapter;
 import protocol.Registration;
 import protocol.Request;
 import protocol.Response;
-
 import main.Server;
 
 /**
  * Tests the login process
  * Testing strategy:
- *  -
+ *  @category no_didit
  */
 public class LoginTest extends ServerTest {
     @Test

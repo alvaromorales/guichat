@@ -5,9 +5,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
-
 import protocol.Registration.*;
 import protocol.Request;
+import protocol.RoomRequest.JoinOrCreateRoomRequest;
+import protocol.RoomRequest.LeaveRoomRequest;
 import protocol.StopServer;
 
 /**
@@ -39,7 +40,7 @@ public class RequestHandler implements Runnable {
 
         /**
          * Stops the request handler thread
-         * @param request the StopServer request issues by the server
+         * @param request the StopServer request issued by the server
          */
         @Override
         public synchronized Void visit(StopServer request) {
@@ -49,6 +50,18 @@ public class RequestHandler implements Runnable {
                     u.disconnect();
                 }
             }
+            return null;
+        }
+
+        @Override
+        public synchronized Void visit(JoinOrCreateRoomRequest request) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        @Override
+        public synchronized Void visit(LeaveRoomRequest request) {
+            // TODO Auto-generated method stub
             return null;
         }
     }
