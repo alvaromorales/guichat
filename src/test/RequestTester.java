@@ -9,6 +9,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.DelayQueue;
+import java.util.concurrent.TimeUnit;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import protocol.InterfaceAdapter;
@@ -22,13 +24,16 @@ import protocol.Response;
  */
 public class RequestTester implements Runnable {
     private final String SERVER_NAME = "localhost";
+    private final long MAX_WAIT = 10000;
     private final int SERVER_PORT = 4444;
     private BufferedReader input;
     private PrintWriter output;    
+    private Socket socket;
     private Gson gson;
     private List<Response> responseList;
     private Thread requestSender;
     private int expectedResponses;
+    private String username;
 
     class RequestSender implements Runnable {
         DelayQueue<DelayedRequest> requestQueue;
@@ -40,8 +45,12 @@ public class RequestTester implements Runnable {
         @Override
         public void run() {
             DelayedRequest request;
-            while((request = requestQueue.poll()) != null) {
-                sendRequest(request.getRequest());
+            try {
+                while(!requestQueue.isEmpty() && (request = requestQueue.poll(MAX_WAIT,TimeUnit.MILLISECONDS)) != null) {
+                    sendRequest(request.getRequest());
+                }
+            } catch (InterruptedException e) {
+                System.out.println("Request sender TIMED OUT");
             }
         }
 
@@ -57,12 +66,13 @@ public class RequestTester implements Runnable {
         try {
             this.expectedResponses = expectedResponses;
             this.gson = new GsonBuilder().registerTypeAdapter(Request.class, new InterfaceAdapter<Request>())
-                                        .registerTypeAdapter(Response.class, new InterfaceAdapter<Response>())
-                                        .create();
+                    .registerTypeAdapter(Response.class, new InterfaceAdapter<Response>())
+                    .create();
             this.responseList = new ArrayList<Response>();
-            
+            this.username = username;
+
             //Attempt to connect to the chat server
-            Socket socket = new Socket(SERVER_NAME, SERVER_PORT);
+            this.socket = new Socket(SERVER_NAME, SERVER_PORT);
 
             input = new BufferedReader(
                     new InputStreamReader(
@@ -72,11 +82,11 @@ public class RequestTester implements Runnable {
                             socket.getOutputStream()));
 
             Request login = new Registration.LoginRequest(username);
-            
+
             DelayQueue<DelayedRequest> allRequests = new DelayQueue<DelayedRequest>();
             allRequests.add(new DelayedRequest(login, 0));
             allRequests.addAll(requests);
-            
+
             requestSender = new Thread(new RequestSender(allRequests));
         } catch (IOException e) {
             //Failure to connect
@@ -98,7 +108,7 @@ public class RequestTester implements Runnable {
     /**
      * Listens for server responses
      */
-    public void listen() {
+    public synchronized void listen() {
         try {
             for (int i=0;i<expectedResponses;i++) {
                 String serverResponse = input.readLine();
@@ -106,7 +116,7 @@ public class RequestTester implements Runnable {
                     Response r = gson.fromJson(serverResponse, Response.class);
                     responseList.add(r);
                 }
-            }
+            }            
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -119,7 +129,9 @@ public class RequestTester implements Runnable {
         listen();
         try {
             requestSender.join();
+            sendRequest(new Registration.LogoutRequest(username));
         } catch (InterruptedException e) {
+            System.out.println("Socket closed");
             e.printStackTrace();
         }
     }

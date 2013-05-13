@@ -95,6 +95,8 @@ public class User implements Runnable {
         running.set(false);
         try {
             socket.close();
+            output.close();
+            input.close();
         } catch (IOException e) {
         }
     }
@@ -119,10 +121,10 @@ public class User implements Runnable {
                 try {
                     requestQueue.put(r);
                 } catch (InterruptedException e) {
-                    System.out.println("User " + username + " disconnected");
                 }
             }            
         } catch (IOException e) {
+            System.out.println("User " + username + " disconnected");
         }    
     }
 

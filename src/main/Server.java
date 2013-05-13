@@ -98,6 +98,9 @@ public class Server {
         requestHandler.stop();
         try {
             handlingThread.join();
+            for (Thread t: userThreads) {
+                t.join();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
