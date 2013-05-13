@@ -11,6 +11,8 @@ import java.net.URISyntaxException;
 import java.sql.Timestamp;
 import java.util.Date;
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+
 import protocol.Message;
 import protocol.SimpleMessage;
 
@@ -100,7 +102,7 @@ public class ChatGUI extends JFrame {
     private static final long serialVersionUID = 9049377501245959344L;
     //GUI variable declarations
     private JScrollPane jScrollPane1, jScrollPane2, jScrollPane3;
-    private JTextArea inputTextArea, chatTextArea, chatRoomList;
+    private JTextArea inputTextArea, chatTextArea;
     private JLabel avaiableChatRoomsLabel, messageLabel;
     private JButton sendButton;
     private JMenuBar menuBar;
@@ -112,6 +114,8 @@ public class ChatGUI extends JFrame {
             "1) \"--list_users_in_room\"\n" +
             "2) \"--exit_room\"\n" +
             "3) \"--exit_chat_client\"\n";
+    private JTable chatWindowsTable;
+    private DefaultTableModel chatWindowsTableModel;
     //Server/client connection variables
     private boolean isConnected = false;
     private final String SERVER_NAME = "localhost";
@@ -140,7 +144,6 @@ public class ChatGUI extends JFrame {
         chatTextArea = new JTextArea();
         sendButton = new JButton();
         jScrollPane3 = new JScrollPane();
-        chatRoomList = new JTextArea();
         avaiableChatRoomsLabel = new JLabel();
         messageLabel = new JLabel();
         menuBar = new JMenuBar();
@@ -192,7 +195,7 @@ public class ChatGUI extends JFrame {
 
         //display messages label
         messageLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        messageLabel.setText("Chat Window"); //dynamically set this
+        messageLabel.setText("Chat Window"); //TODO dynamically set this
 
         //send button
         sendButton.setText("Send");
@@ -206,10 +209,10 @@ public class ChatGUI extends JFrame {
         //to will be starred or put in bold.
         //They will also have a number next to the name if there
         //are unread messages
-        chatRoomList.setEditable(false);
-        chatRoomList.setColumns(20);
-        chatRoomList.setRows(5);
-        jScrollPane3.setViewportView(chatRoomList);
+        chatWindowsTableModel = (DefaultTableModel) new DefaultTableModel(new Object[] {"Active","Name","# Users","# Unread"},0);
+        chatWindowsTable = new JTable(chatWindowsTableModel);
+        jScrollPane3.setViewportView(chatWindowsTable);
+        jScrollPane3.setSize(30, 10);
 
         //Open chat rooms label
         avaiableChatRoomsLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -330,7 +333,7 @@ public class ChatGUI extends JFrame {
                                 .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING, false)
                                         .addGroup(layout.createSequentialGroup()
-                                                .addComponent(jScrollPane2, GroupLayout.PREFERRED_SIZE, 261, GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(jScrollPane2)
                                                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                                                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING, false)
                                                         .addComponent(sendButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
