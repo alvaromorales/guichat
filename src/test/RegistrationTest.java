@@ -11,7 +11,6 @@ import protocol.InterfaceAdapter;
 import protocol.Registration;
 import protocol.Request;
 import protocol.Response;
-import protocol.Registration.LoginRequest;
 import protocol.ServerErrorResponse;
 import main.Server;
 
@@ -66,7 +65,6 @@ public class RegistrationTest extends ServerTest {
     
     /**
      * Tests that a user cannot login with a username that is already taken
-     * After getting a username already taken, the user will attempt to login with a different username
      * @throws InterruptedException 
      */
     @Test
