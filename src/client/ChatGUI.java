@@ -20,7 +20,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import protocol.InterfaceAdapter;
-import protocol.LoginRequest;
+import protocol.Registration;
 import protocol.Request;
 import protocol.Response;
 
@@ -415,8 +415,8 @@ public class ChatGUI extends JFrame {
             
             isConnected = true;
 
-            Request loginRequest = new LoginRequest(s);
-            output.println(requestGson.toJson(loginRequest));
+            Request loginRequest = new Registration.LoginRequest(s);
+            output.println(requestGson.toJson(loginRequest,Request.class));
             output.flush();
 
             username = s;

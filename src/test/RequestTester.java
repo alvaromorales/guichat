@@ -12,7 +12,7 @@ import java.util.concurrent.DelayQueue;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import protocol.InterfaceAdapter;
-import protocol.LoginRequest;
+import protocol.Registration;
 import protocol.Request;
 import protocol.Response;
 
@@ -56,7 +56,9 @@ public class RequestTester implements Runnable {
     public RequestTester(String username, DelayQueue<DelayedRequest> requests, int expectedResponses) {
         try {
             this.expectedResponses = expectedResponses;
-            this.gson = new GsonBuilder().registerTypeAdapter(Request.class, new InterfaceAdapter<Request>()).registerTypeAdapter(Response.class, new InterfaceAdapter<Response>()).create();
+            this.gson = new GsonBuilder().registerTypeAdapter(Request.class, new InterfaceAdapter<Request>())
+                                        .registerTypeAdapter(Response.class, new InterfaceAdapter<Response>())
+                                        .create();
             this.responseList = new ArrayList<Response>();
             
             //Attempt to connect to the chat server
@@ -69,7 +71,7 @@ public class RequestTester implements Runnable {
                     new OutputStreamWriter(
                             socket.getOutputStream()));
 
-            Request login = new LoginRequest(username);
+            Request login = new Registration.LoginRequest(username);
             
             DelayQueue<DelayedRequest> allRequests = new DelayQueue<DelayedRequest>();
             allRequests.add(new DelayedRequest(login, 0));
@@ -90,8 +92,7 @@ public class RequestTester implements Runnable {
      * @param r the request to send
      */
     public void sendRequest(Request r) {
-        System.out.println("Sending request");
-        output.println(gson.toJson(r));
+        output.println(gson.toJson(r,Request.class));
         output.flush();
     }
 
@@ -103,7 +104,6 @@ public class RequestTester implements Runnable {
             for (int i=0;i<expectedResponses;i++) {
                 String serverResponse = input.readLine();
                 if (serverResponse != null) {
-                    System.out.println(serverResponse);
                     Response r = gson.fromJson(serverResponse, Response.class);
                     responseList.add(r);
                 }

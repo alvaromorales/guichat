@@ -3,13 +3,16 @@ package server;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Set;
+import java.net.Socket;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import com.google.gson.*;
 
 import protocol.InterfaceAdapter;
-import protocol.LoginRequest;
-import protocol.LoginResponse;
+import protocol.Registration;
+import protocol.Registration.*;
 import protocol.Request;
 import protocol.Response;
 import protocol.ServerError;
@@ -22,26 +25,31 @@ public class User implements Runnable {
     private final PrintWriter output;
     private BlockingQueue<Request> requestQueue;
     private Gson gson;
-    private Set<String> usernames;
-    
+    private Map<String,User> users;
+    private String username;
+    private Socket socket;
+    private AtomicBoolean running;
+
     /**
      * Creates a new user
      * @param socket the user's socket
      */
-    public User(BufferedReader input, PrintWriter output, BlockingQueue<Request> requestQueue, Set<String> usernames) {
+    public User(Socket socket, BufferedReader input, PrintWriter output, BlockingQueue<Request> requestQueue, Map<String,User> users) {
+        this.socket = socket;
         this.input = input;
         this.output = output;
         this.requestQueue = requestQueue;
         this.gson = new GsonBuilder().registerTypeAdapter(Request.class, new InterfaceAdapter<Request>()).registerTypeAdapter(Response.class, new InterfaceAdapter<Response>()).create();
-        this.usernames = usernames;
+        this.users = users;
+        this.running = new AtomicBoolean(true);
     }
-    
+
     @Override
     public void run() {
         login();
         listen();
     }
-    
+
     /**
      * Logs a user in
      */
@@ -49,14 +57,16 @@ public class User implements Runnable {
         try {
             boolean isLoggedIn = false;
             String clientRequest;
-            while (((clientRequest = input.readLine()) != null) && !isLoggedIn) {
+            while (running.get() && !isLoggedIn && ((clientRequest = input.readLine()) != null)) {
                 try {
-                    LoginRequest loginRequest = gson.fromJson(clientRequest, LoginRequest.class);
-                    System.out.println(loginRequest);
-                    synchronized (usernames) {
-                        if (usernames.add(loginRequest.getUsername())) {
+                    Registration.LoginRequest loginRequest = (Registration.LoginRequest)gson.fromJson(clientRequest, Request.class);
+                    //if casting fails, the exception will be caught and an UNAUTHORIZED error will be reported
+                    //safe to do because we expect the FIRST request to be a loginRequest
+                    synchronized (users) {
+                        if (users.get(loginRequest.getUsername()) == null) {
+                            users.put(loginRequest.getUsername(), this);
                             Response loginSuccessful = new LoginResponse(loginRequest.getUsername());
-                            System.out.println("Sending: " + loginSuccessful);
+                            this.username = loginRequest.getUsername();
                             sendResponse(loginSuccessful);
                             isLoggedIn = true;
                         } else {
@@ -68,29 +78,43 @@ public class User implements Runnable {
                     ServerError error = new ServerError(ServerError.Type.UNAUTHORIZED,"Unauthorized. Please log in.");
                     sendResponse(error);
                 }
-                
+
             }            
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-    
+
+    /**
+     * Disconnects a user from the server
+     */
+    public synchronized void disconnect() {       
+        running.set(false);
+        try {
+            input.close();
+            output.close();
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * Sends a response to the user
      * @param response the response to send
      */
     public void sendResponse(Response response) {
-        output.println(gson.toJson(response));
+        output.println(gson.toJson(response,Response.class));
         output.flush();
     }
-    
+
     /**
      * Listens for client requests
      */
     public void listen() {
         try {
             String clientRequest;
-            while ((clientRequest = input.readLine()) != null) {
+            while (running.get() && (clientRequest = input.readLine()) != null) {
                 Request r = gson.fromJson(clientRequest, Request.class);
                 try {
                     requestQueue.put(r);
