@@ -21,15 +21,15 @@ public class RequestHandler implements Runnable {
     private BlockingQueue<Request> requestQueue;
     private AtomicBoolean running;
     private RequestHandlerVisitor visitor;
-    
+
     class RequestHandlerVisitor implements Visitor<Void> {
         /**
          * Creates a new RequestHandlerVisitor object
          */
         public RequestHandlerVisitor() {
-            
+
         }
-        
+
         /**
          * Removes a User from the server
          */
@@ -49,10 +49,8 @@ public class RequestHandler implements Runnable {
         @Override
         public synchronized Void visit(StopServer request) {
             running.set(false);
-            synchronized (usersMap) {
-                for (User u: usersMap.values()) {
-                    u.disconnect();
-                }
+            for (User u: usersMap.values()) {
+                u.disconnect();
             }
             return null;
         }
@@ -70,7 +68,7 @@ public class RequestHandler implements Runnable {
                 chatRooms.put(request.getRoomName(), new ChatRoom(request.getRoomName(), usersMap));
                 chatRooms.get(request.getRoomName()).addUser(request.getUsername());
             }
-            
+
             // send confirmation
             usersMap.get(request.getUsername()).sendResponse(new JoinedRoomResponse(request.getRoomName()));
             return null;
@@ -83,7 +81,7 @@ public class RequestHandler implements Runnable {
         public synchronized Void visit(LeaveRoomRequest request) {
             ChatRoom room = chatRooms.get(request.getRoomName());
             room.removeUser(request.getUsername());
-            
+
             synchronized (chatRooms) {
                 if (room.isEmpty()) {
                     chatRooms.remove(request.getRoomName());
@@ -95,7 +93,7 @@ public class RequestHandler implements Runnable {
             return null;
         }
     }
-    
+
     /**
      * Creates a new RequestHandler object
      * @param requestQueue the blocking queue of requests
@@ -108,14 +106,17 @@ public class RequestHandler implements Runnable {
         this.running = new AtomicBoolean(true);
         this.visitor = new RequestHandlerVisitor();
     }
-    
+
     /**
      * Stops the request handler
      */
     public void stop() {
         requestQueue.offer(new StopServer());
     }
-    
+
+    /**
+     * Runs the request handler
+     */
     @Override
     public void run() {
         try {
@@ -124,7 +125,6 @@ public class RequestHandler implements Runnable {
                 request.accept(this.visitor);
             }
         } catch (Exception e) {
-            // TODO: handle exception
             e.printStackTrace();
         }
     }

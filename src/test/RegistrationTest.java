@@ -11,14 +11,20 @@ import protocol.InterfaceAdapter;
 import protocol.Registration;
 import protocol.Request;
 import protocol.Response;
+import protocol.Registration.LoginRequest;
+import protocol.ServerErrorResponse;
 import main.Server;
 
 /**
  * Tests the login process
  * Testing strategy:
+ *  - test the serialization of a login request object
+ *  - test a user logging into the server
+ *  - test a user logging into the server with a username that is taken
+ * 
  *  @category no_didit
  */
-public class LoginTest extends ServerTest {
+public class RegistrationTest extends ServerTest {
     @Test
     /**
      * Tests the serialization and deserialization of a LoginRequest
@@ -54,6 +60,34 @@ public class LoginTest extends ServerTest {
         List<Response> expected = new ArrayList<Response>();
         expected.add(new Registration.LoginResponse("benbitdiddle"));
         assertEquals(expected,test.getResponseList());
+        
+        stopServer(server);
+    }
+    
+    /**
+     * Tests that a user cannot login with a username that is already taken
+     * After getting a username already taken, the user will attempt to login with a different username
+     * @throws InterruptedException 
+     */
+    @Test
+    public void takenUsernameLoginTest() throws InterruptedException {
+        Server server = new Server(SERVER_PORT);
+        startServer(server);
+        
+        RequestTester test1 = new RequestTester("benbitdiddle", new DelayQueue<DelayedRequest>(), 1);
+        Thread t1 = new Thread(test1);
+        t1.start();
+        
+        RequestTester test2 = new RequestTester("benbitdiddle", new DelayQueue<DelayedRequest>(), 1);
+        Thread t2 = new Thread(test2);
+        t2.start();
+
+        t1.join();
+        t2.join();
+        
+        List<Response> expected = new ArrayList<Response>();
+        expected.add(new ServerErrorResponse(ServerErrorResponse.Type.LOGIN_TAKEN, "Username taken"));
+        assertEquals(expected,test2.getResponseList());
         
         stopServer(server);
     }

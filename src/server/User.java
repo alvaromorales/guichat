@@ -15,7 +15,7 @@ import protocol.Registration;
 import protocol.Registration.*;
 import protocol.Request;
 import protocol.Response;
-import protocol.ServerError;
+import protocol.ServerErrorResponse;
 
 /**
  * Represents a user connected to the Server
@@ -73,12 +73,12 @@ public class User implements Runnable {
                             sendResponse(loginSuccessful);
                             isLoggedIn = true;
                         } else {
-                            Response loginError = new ServerError(ServerError.Type.LOGIN_TAKEN, "Username taken");
+                            Response loginError = new ServerErrorResponse(ServerErrorResponse.Type.LOGIN_TAKEN, "Username taken");
                             sendResponse(loginError);
                         }
                     }
                 } catch(Exception e) {
-                    ServerError error = new ServerError(ServerError.Type.UNAUTHORIZED,"Unauthorized. Please log in.");
+                    ServerErrorResponse error = new ServerErrorResponse(ServerErrorResponse.Type.UNAUTHORIZED,"Unauthorized. Please log in.");
                     sendResponse(error);
                 }
 
@@ -94,11 +94,8 @@ public class User implements Runnable {
     public synchronized void disconnect() {       
         running.set(false);
         try {
-            input.close();
-            output.close();
             socket.close();
         } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
@@ -122,12 +119,10 @@ public class User implements Runnable {
                 try {
                     requestQueue.put(r);
                 } catch (InterruptedException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    System.out.println("User " + username + " disconnected");
                 }
             }            
         } catch (IOException e) {
-            e.printStackTrace();
         }    
     }
 

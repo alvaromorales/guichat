@@ -9,19 +9,16 @@ import main.Server;
  */
 public abstract class ServerTest {
     public final int SERVER_PORT = 4444;
-    
+    private Thread backgroundThread;
+
     /**
      * Starts the server
      * @param server the server to starts
      */
     public void startServer(final Server server) {
-        Thread backgroundThread = new Thread(new Runnable() {
+        backgroundThread = new Thread(new Runnable() {
             public void run() {
-                try {
-                    server.serve();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                server.serve();
             }
         });
         backgroundThread.start();
@@ -30,15 +27,14 @@ public abstract class ServerTest {
     /**
      * Stops the server
      * @param server the server to stop
-     * @param out the User thread to kill
      */
     public void stopServer(final Server server) {
+        server.stop();
         try {
-            server.stop();
-        } catch (RuntimeException e) {
-            e.printStackTrace();
+            backgroundThread.join();
+        } catch (InterruptedException e) {
         }
     }    
-    
-    
+
+
 }

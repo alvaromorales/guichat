@@ -78,7 +78,6 @@ public class RequestTester implements Runnable {
             allRequests.addAll(requests);
             
             requestSender = new Thread(new RequestSender(allRequests));
-
         } catch (IOException e) {
             //Failure to connect
             e.printStackTrace();
@@ -121,7 +120,6 @@ public class RequestTester implements Runnable {
         try {
             requestSender.join();
         } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
