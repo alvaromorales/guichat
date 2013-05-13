@@ -30,6 +30,7 @@ public class ChatSession {
     List<String> avaibleChatRooms;
     BlockingQueue<Response> responseQueue;
     Thread responseListener;
+    Thread responseHandler;
     Gson requestGson;
     String username;
     ChatGUI gui;
@@ -45,8 +46,11 @@ public class ChatSession {
                     new InputStreamReader(
                         socket.getInputStream()));
             this.chatWindows = Collections.synchronizedList(new ArrayList<ChatWindow>());
+            //create and run the responseHandler thread
+            this.responseHandler = new Thread(new ResponseHandler(this));
+            this.responseHandler.start();
             //create and run the responseListener thread
-            this.responseListener = new Thread(new ResponseListener(this.input));
+            this.responseListener = new Thread(new ResponseListener(this));
             this.responseListener.start();
         } catch (IOException e) {
             e.printStackTrace();

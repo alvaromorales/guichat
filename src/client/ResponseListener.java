@@ -1,9 +1,7 @@
 package client;
 
 
-import java.io.BufferedReader;
 import java.io.IOException;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import protocol.InterfaceAdapter;
@@ -12,11 +10,11 @@ import protocol.Response;
 
 public class ResponseListener implements Runnable {
 
-    BufferedReader input;
+    ChatSession session;
     Gson gson;
 
-    public ResponseListener(BufferedReader input) {
-        this.input = input;
+    public ResponseListener(ChatSession session) {
+        this.session = session;
         this.gson = new GsonBuilder().registerTypeAdapter(Request.class, new InterfaceAdapter<Request>()).registerTypeAdapter(Response.class, new InterfaceAdapter<Response>()).create();
     }
 
@@ -31,11 +29,13 @@ public class ResponseListener implements Runnable {
     public void listen() {
         try {
             String serverResponse;
-            while ((serverResponse = input.readLine()) != null) {
+            while ((serverResponse = session.input.readLine()) != null) {
                 Response r = gson.fromJson(serverResponse, Response.class);
-                //TODO add response to blocking queue
+                session.responseQueue.put(r);
             }            
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
             e.printStackTrace();
         } 
     }
