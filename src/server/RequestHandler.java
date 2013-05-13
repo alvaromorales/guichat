@@ -1,5 +1,6 @@
 package server;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,9 +10,9 @@ import protocol.Registration.*;
 import protocol.Request;
 import protocol.RoomRequest.*;
 import protocol.RoomResponse.*;
-import protocol.RoomResponse.LeftRoomResponse;
 import protocol.SendMessageRequest;
 import protocol.StopServer;
+import protocol.UsersInRoomResponse;
 
 /**
  * Represents a RequestHandler thread
@@ -35,9 +36,12 @@ public class RequestHandler implements Runnable {
          * Sends Message to other users in room.
          */
         @Override
-        public synchronized Void visit(SendMessageRequest request) {
-            //TODO
-            return null;
+        public synchronized Void visit(SendMessageRequest message) {
+            synchronized (chatRooms) {
+                ChatRoom room = chatRooms.get(message.getRoomName());
+                room.broadcastResponse(message);
+                return null;
+            }
         }
 
         /**
@@ -45,8 +49,16 @@ public class RequestHandler implements Runnable {
          */
         @Override
         public synchronized Void visit(GetUsersInRoomRequest request) {
-            //TODO
-            return null;
+            User u = usersMap.get(request.getUsername());
+            synchronized (chatRooms) {
+                ChatRoom room = chatRooms.get(request.getRoomName());
+                if (room == null) {
+                    u.sendResponse(new UsersInRoomResponse(request.getRoomName(), new ArrayList<String>(0)));
+                } else {
+                    u.sendResponse(new UsersInRoomResponse(request.getRoomName(), room.getUsers()));
+                }
+                return null;
+            }
         }
 
         /**
@@ -54,8 +66,8 @@ public class RequestHandler implements Runnable {
          */
         @Override
         public synchronized Void visit(LogoutRequest request) {
-            usersMap.get(request.getUsername()).disconnect();
             synchronized (usersMap) {
+                usersMap.get(request.getUsername()).disconnect();
                 usersMap.remove(request.getUsername());
             }
             return null;
@@ -67,11 +79,13 @@ public class RequestHandler implements Runnable {
          */
         @Override
         public synchronized Void visit(StopServer request) {
-            running.set(false);
-            for (User u: usersMap.values()) {
-                u.disconnect();
+            synchronized (usersMap) {
+                running.set(false);
+                for (User u: usersMap.values()) {
+                    u.disconnect();
+                }
+                return null;
             }
-            return null;
         }
 
         /**
@@ -128,6 +142,8 @@ public class RequestHandler implements Runnable {
 
     /**
      * Stops the request handler
+     * Inserts a 'poison pill' into the request queue
+     * Only ever called by the server
      */
     public void stop() {
         requestQueue.offer(new StopServer());

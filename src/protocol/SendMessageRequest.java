@@ -3,9 +3,9 @@ package protocol;
 import server.Visitor;
 
 /**
- * Represents a SendMessageRequest response
+ * Represents a SendMessageRequest
  */
-public class SendMessageRequest implements Request {
+public class SendMessageRequest implements Request, Response {
     private String username;
     private String roomName;
     private Message message;
