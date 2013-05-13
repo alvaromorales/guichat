@@ -1,6 +1,11 @@
 package client;
 
+import protocol.Registration.LoginResponse;
 import protocol.Response;
+import protocol.RoomResponse.JoinedRoomResponse;
+import protocol.RoomResponse.LeftRoomResponse;
+import protocol.ServerErrorResponse.Type;
+import protocol.ServerErrorResponse;
 
 /**
  * Represents a RequestHandler thread
@@ -18,8 +23,45 @@ public class ResponseHandler implements Runnable {
             
         }
 
-        //TODO implement the various visit methods
+        /**
+         * Sends Message to other users in room.
+         */
+        @Override
+        public synchronized Void visit(LoginResponse response) {
+            //given that we have received a loginresponse
+            //we know that the client was successfully logged in
+            session.gui.setIsConnected(true);
+            session.gui.writeToWindow("System Message: You have been successfully " +
+                                      "logged in with the username " + response.getUsername());
+            return null;
+        }
 
+        @Override
+        public Void visit(JoinedRoomResponse response) {
+          //create chat window
+            ChatWindow c = new ChatWindow(response.getRoomName());
+            //add window to session
+            session.addChatWindow(c);
+            //TODO modify GUI as appropriate
+            return null;
+        }
+
+        @Override
+        public Void visit(LeftRoomResponse response) {
+         // TODO Auto-generated method stub
+            return null;
+        }
+
+        @Override
+        public Void visit(ServerErrorResponse response) {
+            if (response.getType().equals(Type.LOGIN_TAKEN)) {
+                session.gui.writeToWindow("System Message: Login failed. " +
+                                          "The username you requested is taken.");
+            } else if (response.getType().equals(Type.UNAUTHORIZED)) {
+                session.gui.writeToWindow("System Message: " + response.getError());
+            }
+            return null;
+        }
     }
     
     /**
@@ -44,7 +86,7 @@ public class ResponseHandler implements Runnable {
         try {
             while (true) {
                 Response response = session.responseQueue.take();
-                //TODO use vistor to process response
+                response.accept(this.visitor);
             }
         } catch (Exception e) {
             // TODO: handle exception

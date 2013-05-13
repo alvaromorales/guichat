@@ -1,5 +1,7 @@
 package protocol;
 
+import client.ClientVisitor;
+
 /**
  * Represents a RoomResponse response
  */
@@ -70,6 +72,11 @@ public class RoomResponse {
         public String toString() {
             return "JoinedRoomResponse [" + super.toString() + "]";
         }
+
+        @Override
+        public <E> E accept(ClientVisitor<E> v) {
+            return v.visit(this);
+        }
         
     }
     
@@ -112,6 +119,11 @@ public class RoomResponse {
         @Override
         public String toString() {
             return "LeftRoomResponse [" + super.toString() + "]";
+        }
+
+        @Override
+        public <E> E accept(ClientVisitor<E> v) {
+            return v.visit(this);
         }
     }
     

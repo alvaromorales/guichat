@@ -27,19 +27,19 @@ public class ChatWindow {
         gui.writeToWindow(m.getUsername() + ":" + m.getMessage());
     }
 
-    public void addUser(String username) {
+    public synchronized void addUser(String username) {
         this.users.add(username);
     }
 
-    public void removeUser(String username) {
-        //TODO
+    public synchronized void removeUser(String username) {
+        this.users.remove(username);
     }
 
-    public List<Message> getMessages() {
+    public synchronized List<Message> getMessages() {
         return this.messages;
     }
 
-    public List<String> getUsers() {
+    public synchronized List<String> getUsers() {
         return this.users;
     }
 
@@ -47,7 +47,7 @@ public class ChatWindow {
         return this.name;
     }
 
-    public void saveConversation() {
+    public synchronized void saveConversation() {
         try {
              File file = new File(name + "_History.txt");
             // if file doesnt exists, then create it

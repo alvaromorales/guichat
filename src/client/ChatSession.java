@@ -59,6 +59,14 @@ public class ChatSession {
         }        
     }
 
+    public synchronized void addChatWindow(ChatWindow c) {
+        chatWindows.add(c);
+    }
+
+    public synchronized void removeChatWindow(ChatWindow c) {
+        chatWindows.remove(c);
+    }
+
     /**
      * Sends a request to the user
      * @param request the request to send

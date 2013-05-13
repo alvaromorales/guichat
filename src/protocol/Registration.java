@@ -1,5 +1,6 @@
 package protocol;
 
+import client.ClientVisitor;
 import server.Visitor;
 
 /**
@@ -172,6 +173,13 @@ public class Registration {
             } else if (!getUsername().equals(other.getUsername()))
                 return false;
             return true;
+        }
+
+        /**
+         * Accepts a client visitor
+         */
+        public <E> E accept(ClientVisitor<E> v) {
+            return v.visit(this);
         }
         
         /**

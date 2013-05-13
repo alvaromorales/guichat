@@ -360,6 +360,10 @@ public class ChatGUI extends JFrame {
         vertical.setValue(vertical.getMaximum());
     }
 
+    public void setIsConnected(boolean b) {
+        isConnected = b;
+    }
+
     //Listener Methods
 
     private void connectToRoom(ActionEvent e) {
