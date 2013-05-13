@@ -1,5 +1,9 @@
 package client;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -18,22 +22,17 @@ public class ChatWindow {
         this.messages = Collections.synchronizedList(new ArrayList<Message>());
     }
 
-    public void getListOfClients() {
-        //TODO
-        //needs to create a Request object added to chatWindowThreads
-    }
-
-    public void sendMessage(Message m) {
-        //TODO
-        //needs to create a Request object added to chatWindowThreads
-    }
-
-    public void addMessage(Message m) {
+    public synchronized void addMessage(Message m, ChatGUI gui) {
         this.messages.add(m);
+        gui.writeToWindow(m.getUsername() + ":" + m.getMessage());
     }
 
     public void addUser(String username) {
         this.users.add(username);
+    }
+
+    public void removeUser(String username) {
+        //TODO
     }
 
     public List<Message> getMessages() {
@@ -46,6 +45,24 @@ public class ChatWindow {
 
     public String getName() {
         return this.name;
+    }
+
+    public void saveConversation() {
+        try {
+             File file = new File(name + "_History.txt");
+            // if file doesnt exists, then create it
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+            FileWriter fw = new FileWriter(file.getAbsoluteFile());
+            BufferedWriter bw = new BufferedWriter(fw);
+            for (Message m: messages) {
+                bw.write(m.getUsername() + ": " + m.getMessage() + "\n");
+            }
+            bw.close(); 
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

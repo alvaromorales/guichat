@@ -69,27 +69,30 @@ public class ChatSession {
     }
 
     public void sendMessage(ChatWindow c, Message m) {
-        //TODO modify gui
+        //add message to the chatwindow and gui window
+        c.addMessage(m, gui);
         Request createRoomRequest = new SendMessageRequest(gui.username, c.getName(), m);
         sendRequest(createRoomRequest);
     }
 
     public  void createChatWindow(String nameOfRoom) {
-        //TODO modify the gui
         Request createRoomRequest = new RoomRequest.JoinOrCreateRoomRequest(gui.username, nameOfRoom);
         sendRequest(createRoomRequest);
     }
 
     public  void joinChatWindow(String nameOfRoom) {
-        //TODO modify the gui
         Request createRoomRequest = new RoomRequest.JoinOrCreateRoomRequest(gui.username, nameOfRoom);
         sendRequest(createRoomRequest);
     }
 
     public  void getUsersInChatWindow(ChatWindow cur) {
-        //send request
-        Request createRoomRequest = new RoomRequest.GetUsersInRoomRequest(gui.username, cur.getName());
-        sendRequest(createRoomRequest);
+        //possible concurrency issues here
+        //change when you get a chance
+        List<String> users = cur.getUsers();
+        gui.writeToWindow("There are " + users.size() + "users in the room.");
+        for(String user: users) {
+            gui.writeToWindow(user);
+        }
     }
 
     public void closeChatWindow(ChatWindow c) {
@@ -99,7 +102,8 @@ public class ChatSession {
     }
 
     public void saveConversation(ChatWindow cur) {
-        //TODO write contents of chatwindow to file or something
+        cur.saveConversation();
+        gui.writeToWindow("System Message: Save message to file system.");
     }
 
     public String[] getAvailableChatRooms() {

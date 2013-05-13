@@ -5,4 +5,6 @@ package protocol;
  */
 public interface Message {
 
+    String getUsername();
+    String getMessage();
 }
