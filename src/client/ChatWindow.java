@@ -11,12 +11,11 @@ import protocol.Message;
 public class ChatWindow {
     private final String name;
     private List<Message> messages;
-    private List<Thread> chatWindowThreads;
+    private List<String> users;
     
     public ChatWindow(String name) {
         this.name = name;
         this.messages = Collections.synchronizedList(new ArrayList<Message>());
-        this.chatWindowThreads = Collections.synchronizedList(new ArrayList<Thread>());
     }
 
     public void getListOfClients() {
@@ -33,12 +32,16 @@ public class ChatWindow {
         this.messages.add(m);
     }
 
+    public void addUser(String username) {
+        this.users.add(username);
+    }
+
     public List<Message> getMessages() {
         return this.messages;
     }
 
-    public List<Thread> getThreads() {
-        return this.chatWindowThreads;
+    public List<String> getUsers() {
+        return this.users;
     }
 
     @Override

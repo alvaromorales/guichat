@@ -1,87 +1,102 @@
 package client;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import protocol.InterfaceAdapter;
 import protocol.Message;
+import protocol.Registration;
+import protocol.Request;
+import protocol.Response;
 
 /**
  * Creates a chat session with the server
  */
 public class ChatSession {
     PrintWriter output;
+    BufferedReader input;
     List<ChatWindow> chatWindows;
+    List<String> avaibleChatRooms;
+    BlockingQueue<Response> responseQueue;
+    Thread responseListener;
+    Gson requestGson;
+    String username;
+    ChatGUI gui;
 
-    public ChatSession(PrintWriter output) {
-        this.output = output;
-        this.chatWindows = Collections.synchronizedList(new ArrayList<ChatWindow>());
+    public ChatSession(Socket socket, ChatGUI gui) {
+        try {
+            this.gui = gui;
+            this.requestGson = new GsonBuilder().registerTypeAdapter(Request.class, new InterfaceAdapter<Request>()).registerTypeAdapter(Response.class, new InterfaceAdapter<Response>()).create();
+            this.output = new PrintWriter(
+                              new OutputStreamWriter(
+                                socket.getOutputStream()));
+            this.input = new BufferedReader(
+                    new InputStreamReader(
+                        socket.getInputStream()));
+            this.chatWindows = Collections.synchronizedList(new ArrayList<ChatWindow>());
+            //create and run the responseListener thread
+            this.responseListener = new Thread(new ResponseListener(this.input));
+            this.responseListener.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }        
     }
 
-    private void routeMessage(ChatWindow c, Message m) {
-        //find the correct window
-        synchronized(chatWindows) {
-            for (ChatWindow cw: chatWindows) {
-                if (cw.equals(c)) {
-                    cw.addMessage(m);
-                    //also display message in cooresponding GUI window
-                    //TODO
-                }
-            }
-        }
-        //window was not found
-        //need to handle this somehow...
+    /**
+     * Sends a request to the user
+     * @param request the request to send
+     */
+    private void sendRequest(Request request) {
+        output.println(requestGson.toJson(request,Request.class));
+        output.flush();
     }
 
-    private void sendMessage(ChatWindow c, Message m) {
-        //add the message
-        c.addMessage(m);
-        //also display window in corresponding GUI window
-        //send message to others in chat room
-        c.sendMessage(m);
-    }
-
-    private  boolean openChatWindow(ChatWindow c) {
-        //check that the window were attempting to add doesn't already exist
-        synchronized(chatWindows) {
-            for (ChatWindow cw: chatWindows) {
-                if (cw.equals(c)) {
-                    //handle duplicate window somehow
-                    return false;
-                }
-            }
-        }
-        
-        //add the chat window and create corresponding GUI pieces
-        chatWindows.add(c);
-        return true;
-    }
-
-    private void closeChatWindow(ChatWindow c) throws InterruptedException {
-        //wait for the threads in the ChatWindow to finish
-        for (Thread t: c.getThreads()) {
-            t.join();
-        }
-        //send Request object to server
-        //TODO
-        //remove the ChatWindow from chatWindows
-        this.chatWindows.remove(c);
-        //and kill the corresponding GUI pieces
+    public void sendMessage(ChatWindow c, Message m) {
         //TODO
     }
 
-    private boolean logout() throws InterruptedException {
-        //close all of the chat windows and corresponding GUI pieces
-        synchronized(chatWindows) {
-            for (ChatWindow cw: chatWindows) {
-                for (Thread t: cw.getThreads()) t.join();
-            }
-        }
-        return false;
-        
-        //eliminate GUI pieces
+    public  void createChatWindow(String nameOfRoom) {
         //TODO
-        //terminate ChatSession
+    }
+
+    public  void joinChatWindow(String nameOfString) {
+        //TODO
+    }
+
+    public  void getUsersInChatWindow(ChatWindow cur) {
+        //TODO
+    }
+
+    public void closeChatWindow(ChatWindow c) {
+        //TODO
+    }
+
+    public void saveConversation(ChatWindow cur) {
+        //TODO
+    }
+
+    public String[] getAvailableChatRooms() {
+        return avaibleChatRooms.toArray(new String[avaibleChatRooms.size()]);
+    }
+
+    public void sendLoginRequest() {
+        //create/send login request
+        Request loginRequest = new Registration.LoginRequest(gui.username);
+        sendRequest(loginRequest);
+    }   
+
+    public void logout() {
         //TODO
     }
 }

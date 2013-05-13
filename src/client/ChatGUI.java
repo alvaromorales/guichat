@@ -4,25 +4,15 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.sql.Timestamp;
+import java.util.Date;
 import javax.swing.*;
-
-import main.Client;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
-import protocol.InterfaceAdapter;
-import protocol.Registration;
-import protocol.Request;
-import protocol.Response;
+import protocol.Message;
+import protocol.SimpleMessage;
 
 /**
  * Testing Strategy:
@@ -104,6 +94,10 @@ import protocol.Response;
 
 public class ChatGUI extends JFrame {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 9049377501245959344L;
     //GUI variable declarations
     private JScrollPane jScrollPane1, jScrollPane2, jScrollPane3;
     private JTextArea inputTextArea, chatTextArea, chatRoomList;
@@ -123,14 +117,9 @@ public class ChatGUI extends JFrame {
     private final String SERVER_NAME = "localhost";
     private final int SERVER_PORT = 4444;
     private Socket socket;
-    private BufferedReader input = null;
-    private PrintWriter output = null;
     private ChatSession chatSession = null;
-    private String username;
-
-    // Code added to send a login request
-    // move to Client?
-    private Gson requestGson;
+    private ChatWindow currentChatWindow = null;
+    public String username;
 
 
     /**
@@ -138,14 +127,8 @@ public class ChatGUI extends JFrame {
      * 
      * calls initComponents() to create gui
      */
-    public ChatGUI(BufferedReader input, PrintWriter output) {
-        initComponents();
-
-        //Code added to send a login request
-        this.requestGson = new GsonBuilder().registerTypeAdapter(Request.class, new InterfaceAdapter<Request>()).create();
-        this.input = input;
-        this.output = output;
-
+    public ChatGUI() {
+        initComponents();    
         writeToWindow(startupMessage);
     }
 
@@ -185,6 +168,11 @@ public class ChatGUI extends JFrame {
         inputTextArea.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "submitMessage");
         //NOTE: do the following for textarea events. DON'T USE KEYLISTENERS. bad practice.
         inputTextArea.getActionMap().put("submitMessage", new AbstractAction() {
+            /**
+             * 
+             */
+            private static final long serialVersionUID = -4542333036170122454L;
+
             @Override
             public void actionPerformed(ActionEvent e) {
                 sendButtonHandler(e);
@@ -357,7 +345,7 @@ public class ChatGUI extends JFrame {
 
     //Helpers
 
-    private void writeToWindow(String text) {
+    public synchronized void writeToWindow(String text) {
         chatTextArea.append(text);
         scrollToBottomOfChatWindow();
     }
@@ -376,8 +364,8 @@ public class ChatGUI extends JFrame {
 
     private void connectToRoom(ActionEvent e) {
         if (isConnected) {
-            Object[] possibilities = {"ham", "spam", "yam"}; //get the list of rooms
-            String s = (String)JOptionPane.showInputDialog(
+            Object[] possibilities = chatSession.getAvailableChatRooms(); //get the list of rooms
+            String roomName = (String)JOptionPane.showInputDialog(
                     this,
                     "What room would you like to join?",
                     "Connect to Room",
@@ -385,7 +373,7 @@ public class ChatGUI extends JFrame {
                     null,
                     possibilities,
                     possibilities[0]);
-            //TODO
+            chatSession.joinChatWindow(roomName);
         }
     }
 
@@ -396,7 +384,10 @@ public class ChatGUI extends JFrame {
                     "Are you sure that you want to leave this room?",
                     "Disconnect from Room",
                     JOptionPane.YES_NO_OPTION);
-            //TODO
+            if (n == 0) { //yes
+                chatSession.closeChatWindow(currentChatWindow);
+                //the current chat window needs to be set to something else
+            }
         }
     }
 
@@ -404,7 +395,8 @@ public class ChatGUI extends JFrame {
         if (isConnected) {
             writeToWindow("System Message: You are already connected. Logout and log back in if you are looking to change username.");
         } else {
-            String s = (String)JOptionPane.showInputDialog(
+            //ask user for username
+            String username = (String)JOptionPane.showInputDialog(
                     this,
                     "What would you like your nickname to be? (This must be unique)",
                     "Connect to Server",
@@ -412,22 +404,22 @@ public class ChatGUI extends JFrame {
                     null,
                     null,
                     "Ex. jholliman");
-            
-            isConnected = true;
-
-            Request loginRequest = new Registration.LoginRequest(s);
-            output.println(requestGson.toJson(loginRequest,Request.class));
-            output.flush();
-
-            username = s;
-            clearWindow();
-
-            //Create chat session instance
-            //perhaps check to see if username is available here
-            //listen to output
-            //chatSession = new ChatSession(output);
-
-            //TODO
+            this.username = username;
+            try {
+                //Attempt to connect to the chat server
+                Socket socket = new Socket(SERVER_NAME, SERVER_PORT);
+                //Alert of success for testing purposes
+                System.out.println("Connected to chat server at " + SERVER_NAME + ":" + SERVER_PORT + ".");
+                //create the chat session
+                chatSession = new ChatSession(socket, this);
+                //send login request
+                chatSession.sendLoginRequest();
+            } catch (IOException e1) {
+                //Failure to connect
+                e1.printStackTrace();
+                System.out.println("Failed to connect to chat server at " + SERVER_NAME + ":" + SERVER_PORT + " or broken socket.");
+                System.exit(-1);
+            }
         }  
     }
 
@@ -439,12 +431,11 @@ public class ChatGUI extends JFrame {
                     "Disconnect from Room",
                     JOptionPane.YES_NO_OPTION);
             if (n == 0) { //yes
-                //TODO join any threads that may exist in ChatSession
+                chatSession.logout();
                 isConnected = false;
                 try {
                     socket.close();
-                    input = null;
-                    output = null;
+                    socket = null;
                     username = null;
                     clearWindow();
                     writeToWindow("You have been successfully disconnected from the server.\n");
@@ -457,7 +448,7 @@ public class ChatGUI extends JFrame {
 
     private void createRoom(ActionEvent e) {
         if (isConnected) {
-            String s = (String)JOptionPane.showInputDialog(
+            String name = (String)JOptionPane.showInputDialog(
                     this,
                     "What is the name of the room you would like to create? (This must be unique)",
                     "Create Room",
@@ -465,19 +456,22 @@ public class ChatGUI extends JFrame {
                     null,
                     null,
                     "Ex. John's room");
-            //TODO
+            //attempt to create the chatWindow
+            chatSession.createChatWindow(name);
         }
     }
 
     private void settings(ActionEvent e) {
         if (isConnected) {
             //TODO
+        } else {
+            //TODO
         }
     }
 
     private void saveConversation(ActionEvent e) {
         if (isConnected) {
-            //TODO
+            chatSession.saveConversation(currentChatWindow);
         }
     }
 
@@ -486,23 +480,20 @@ public class ChatGUI extends JFrame {
         if (textEntered.equals("--help")) {
             writeToWindow(helpCommands);
         } else if (textEntered.equals("--list_users_in_room")) {
-            //TODO 
-            //as with the following two these commands will necessitate a Request object sent to the server
+            chatSession.getUsersInChatWindow(currentChatWindow);
         } else if (textEntered.equals("--exit_room")) {
-            //TODO
+            chatSession.closeChatWindow(currentChatWindow);
+            //the current chat window needs to be set to something else
         } else if (textEntered.equals("--exit_chat_client")) {
             disconnectFromServer(e);
             System.exit(0);
         } else {
             if (isConnected) {
                 String nothing = "";
-
+                Message m = new SimpleMessage(textEntered, new Timestamp((new Date()).getTime()), username);
                 if (!textEntered.equals(nothing)) { //check for text
-                    //TODO
-                    //send message to server here
-                    output.write(username + ": " + textEntered + "\n");
-                    output.flush();
-                    writeToWindow(username + ": " + textEntered + "\n");
+                    chatSession.sendMessage(currentChatWindow, m);//chat session will write to the window
+                    //writeToWindow(username + ": " + textEntered + "\n");
                 }
             } else {
                 writeToWindow(startupMessage);
