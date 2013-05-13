@@ -1,5 +1,7 @@
 package protocol;
 
+import client.ClientVisitor;
+
 /**
  * Represents a ServerErrorResponse response message
  */
@@ -72,6 +74,11 @@ public class ServerErrorResponse implements Response {
         if (errorType != other.errorType)
             return false;
         return true;
+    }
+
+    @Override
+    public <E> E accept(ClientVisitor<E> v) {
+        return v.visit(this);
     }
     
     
