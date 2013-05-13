@@ -19,6 +19,8 @@ import protocol.Message;
 import protocol.Registration;
 import protocol.Request;
 import protocol.Response;
+import protocol.RoomRequest;
+import protocol.SendMessageRequest;
 
 /**
  * Creates a chat session with the server
@@ -67,27 +69,37 @@ public class ChatSession {
     }
 
     public void sendMessage(ChatWindow c, Message m) {
-        //TODO
+        //TODO modify gui
+        Request createRoomRequest = new SendMessageRequest(gui.username, c.getName(), m);
+        sendRequest(createRoomRequest);
     }
 
     public  void createChatWindow(String nameOfRoom) {
-        //TODO
+        //TODO modify the gui
+        Request createRoomRequest = new RoomRequest.JoinOrCreateRoomRequest(gui.username, nameOfRoom);
+        sendRequest(createRoomRequest);
     }
 
-    public  void joinChatWindow(String nameOfString) {
-        //TODO
+    public  void joinChatWindow(String nameOfRoom) {
+        //TODO modify the gui
+        Request createRoomRequest = new RoomRequest.JoinOrCreateRoomRequest(gui.username, nameOfRoom);
+        sendRequest(createRoomRequest);
     }
 
     public  void getUsersInChatWindow(ChatWindow cur) {
-        //TODO
+        //send request
+        Request createRoomRequest = new RoomRequest.GetUsersInRoomRequest(gui.username, cur.getName());
+        sendRequest(createRoomRequest);
     }
 
     public void closeChatWindow(ChatWindow c) {
-        //TODO
+        //TODO modify the gui
+        Request leaveRoomRequest = new RoomRequest.LeaveRoomRequest(gui.username, c.getName());
+        sendRequest(leaveRoomRequest);
     }
 
     public void saveConversation(ChatWindow cur) {
-        //TODO
+        //TODO write contents of chatwindow to file or something
     }
 
     public String[] getAvailableChatRooms() {
@@ -101,6 +113,8 @@ public class ChatSession {
     }   
 
     public void logout() {
-        //TODO
+        //create/send logout request
+        Request logoutRequest = new Registration.LogoutRequest(gui.username);
+        sendRequest(logoutRequest);
     }
 }

@@ -44,6 +44,10 @@ public class ChatWindow {
         return this.users;
     }
 
+    public String getName() {
+        return this.name;
+    }
+
     @Override
     public boolean equals(Object obj) {
         //check edges

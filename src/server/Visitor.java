@@ -1,8 +1,10 @@
 package server;
 
 import protocol.Registration.*;
+import protocol.RoomRequest.GetUsersInRoomRequest;
 import protocol.RoomRequest.JoinOrCreateRoomRequest;
 import protocol.RoomRequest.LeaveRoomRequest;
+import protocol.SendMessageRequest;
 import protocol.StopServer;
 
 public interface Visitor<E> {
@@ -10,4 +12,6 @@ public interface Visitor<E> {
     public E visit(StopServer request);
     public E visit(JoinOrCreateRoomRequest request);
     public E visit(LeaveRoomRequest request);
+    public E visit(GetUsersInRoomRequest request);
+    public E visit(SendMessageRequest request);
 }

@@ -10,6 +10,7 @@ import protocol.Request;
 import protocol.RoomRequest.*;
 import protocol.RoomResponse.*;
 import protocol.RoomResponse.LeftRoomResponse;
+import protocol.SendMessageRequest;
 import protocol.StopServer;
 
 /**
@@ -28,6 +29,24 @@ public class RequestHandler implements Runnable {
          */
         public RequestHandlerVisitor() {
 
+        }
+
+        /**
+         * Sends Message to other users in room.
+         */
+        @Override
+        public synchronized Void visit(SendMessageRequest request) {
+            //TODO
+            return null;
+        }
+
+        /**
+         * Gets all of the users in a room
+         */
+        @Override
+        public synchronized Void visit(GetUsersInRoomRequest request) {
+            //TODO
+            return null;
         }
 
         /**
