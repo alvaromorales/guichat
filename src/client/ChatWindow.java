@@ -16,6 +16,7 @@ public class ChatWindow {
     private final String name;
     private List<Message> messages;
     private List<String> users;
+    private int unreadCount = 0;
     
     public ChatWindow(String name) {
         this.name = name;
@@ -24,19 +25,31 @@ public class ChatWindow {
 
     public synchronized void addMessage(Message m, ChatGUI gui) {
         this.messages.add(m);
-        //TODO provide logic for updating the correct things
-        //depending what the current chat window is
-        gui.writeToWindow(m.getUsername() + ":" + m.getMessage());
+        if (this.equals(gui.getCurrentChatWindow())) { //ChatWindow is current
+            gui.writeToWindow(m.getUsername() + ":" + m.getMessage());
+        } else { //ChatWindow is not open. Modify sidebar
+            unreadCount += 1;
+            //TODO
+        }
     }
 
-    public synchronized void addUser(String username) {
+    public synchronized void addUser(String username, ChatGUI gui) {
         this.users.add(username);
-        //TODO update gui
+        if (this.equals(gui.getCurrentChatWindow())) { //ChatWindow is current
+            gui.writeToWindow("System Message: " + username + " has joined the chat room.");
+        } else { //ChatWindow is not open. 
+            //TODO Modify sidebar
+        }
     }
 
-    public synchronized void removeUser(String username) {
+    public synchronized void removeUser(String username, ChatGUI gui) {
         this.users.remove(username);
-        //TODO update gui
+        this.users.add(username);
+        if (this.equals(gui.getCurrentChatWindow())) { //ChatWindow is current
+            gui.writeToWindow("System Message: " + username + " has left the chat room.");
+        } else { //ChatWindow is not open. 
+            //TODO Modify sidebar
+        }
     }
 
     public synchronized List<Message> getMessages() {
@@ -49,6 +62,10 @@ public class ChatWindow {
 
     public String getName() {
         return this.name;
+    }
+
+    public synchronized int getUnreadCount() {
+        return unreadCount;
     }
 
     public synchronized void saveConversation() {

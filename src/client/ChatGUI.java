@@ -95,7 +95,7 @@ import protocol.SimpleMessage;
 public class ChatGUI extends JFrame {
 
     /**
-     * 
+     *  Variables
      */
     private static final long serialVersionUID = 9049377501245959344L;
     //GUI variable declarations
@@ -364,6 +364,10 @@ public class ChatGUI extends JFrame {
         isConnected = b;
     }
 
+    public synchronized ChatWindow getCurrentChatWindow() {
+        return currentChatWindow;
+    }
+
     //Listener Methods
 
     private void connectToRoom(ActionEvent e) {
@@ -483,12 +487,12 @@ public class ChatGUI extends JFrame {
         String textEntered = inputTextArea.getText();
         if (textEntered.equals("--help")) {
             writeToWindow(helpCommands);
-        } else if (textEntered.equals("--list_users_in_room")) {
+        } else if (textEntered.equals("--list_users_in_room") && isConnected) {
             chatSession.getUsersInChatWindow(currentChatWindow);
-        } else if (textEntered.equals("--exit_room")) {
+        } else if (textEntered.equals("--exit_room") && isConnected) {
             chatSession.closeChatWindow(currentChatWindow);
-            //the current chat window needs to be set to something else
-        } else if (textEntered.equals("--exit_chat_client")) {
+            //TODO the current chat window needs to be set to something else
+        } else if (textEntered.equals("--exit_chat_client") && isConnected) {
             disconnectFromServer(e);
             System.exit(0);
         } else {

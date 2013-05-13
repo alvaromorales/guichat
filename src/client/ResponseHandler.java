@@ -23,7 +23,6 @@ public class ResponseHandler implements Runnable {
          * Creates a new ResponseHandlerVisitor object
          */
         public ResponseHandlerVisitor() {
-            
         }
 
         /**
@@ -87,9 +86,9 @@ public class ResponseHandler implements Runnable {
             ChatWindow c = session.getChatWindows().get(response.getRoomName());
             String username = response.getUsername();
             if (response.isJoining()) { //joining room
-                c.addUser(username);
+                c.addUser(username, session.gui);
             } else { //exiting room
-                c.removeUser(username);
+                c.removeUser(username, session.gui);
             }
             return null;
         }
@@ -120,7 +119,6 @@ public class ResponseHandler implements Runnable {
                 response.accept(this.visitor);
             }
         } catch (Exception e) {
-            // TODO: handle exception
             e.printStackTrace();
         }
     }
