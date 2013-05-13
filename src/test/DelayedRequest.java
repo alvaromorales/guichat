@@ -60,4 +60,13 @@ public class DelayedRequest implements Delayed {
         return request;
     }
 
+    /**
+     * Gets the string representation of a DelayedRequest object
+     * @return the string representation of a DelayedRequest object
+     */
+    @Override
+    public String toString() {
+        return "DelayedRequest [request=" + request + ", delay=" + delay + "]";
+    }
+
 }

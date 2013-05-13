@@ -1,6 +1,5 @@
 package test;
 
-import java.io.IOException;
 import main.Server;
 
 /**

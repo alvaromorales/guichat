@@ -70,6 +70,13 @@ public class RequestHandler implements Runnable {
                 usersMap.get(request.getUsername()).disconnect();
                 usersMap.remove(request.getUsername());
             }
+            
+            synchronized (chatRooms) {
+                for (ChatRoom room : chatRooms.values()) {
+                    room.removeUser(request.getUsername());
+                }
+            }
+
             return null;
         }
 
