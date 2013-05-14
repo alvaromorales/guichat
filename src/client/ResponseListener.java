@@ -5,6 +5,7 @@ import java.io.IOException;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import protocol.InterfaceAdapter;
+import protocol.Message;
 import protocol.Request;
 import protocol.Response;
 
@@ -15,7 +16,7 @@ public class ResponseListener implements Runnable {
 
     public ResponseListener(ChatSession session) {
         this.session = session;
-        this.gson = new GsonBuilder().registerTypeAdapter(Request.class, new InterfaceAdapter<Request>()).registerTypeAdapter(Response.class, new InterfaceAdapter<Response>()).create();
+        this.gson = new GsonBuilder().registerTypeAdapter(Request.class, new InterfaceAdapter<Request>()).registerTypeAdapter(Response.class, new InterfaceAdapter<Response>()).registerTypeAdapter(Message.class, new InterfaceAdapter<Message>()).create();
     }
 
     @Override

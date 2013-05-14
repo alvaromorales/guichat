@@ -13,9 +13,12 @@ import com.google.gson.*;
 import protocol.InterfaceAdapter;
 import protocol.Registration;
 import protocol.Registration.*;
+import protocol.AvailableChatRoomsResponse;
+import protocol.Message;
 import protocol.Request;
 import protocol.Response;
 import protocol.ServerErrorResponse;
+import protocol.UsersInRoomResponse;
 
 /**
  * Represents a user connected to the Server
@@ -39,7 +42,7 @@ public class User implements Runnable {
         this.input = input;
         this.output = output;
         this.requestQueue = requestQueue;
-        this.gson = new GsonBuilder().registerTypeAdapter(Request.class, new InterfaceAdapter<Request>()).registerTypeAdapter(Response.class, new InterfaceAdapter<Response>()).create();
+        this.gson = new GsonBuilder().registerTypeAdapter(Request.class, new InterfaceAdapter<Request>()).registerTypeAdapter(Response.class, new InterfaceAdapter<Response>()).registerTypeAdapter(Message.class, new InterfaceAdapter<Message>()).create();
         this.users = users;
         this.running = new AtomicBoolean(true);
     }
@@ -71,6 +74,7 @@ public class User implements Runnable {
                             Response loginSuccessful = new LoginResponse(loginRequest.getUsername());
                             this.username = loginRequest.getUsername();
                             sendResponse(loginSuccessful);
+                            System.out.println("LOGIN: " + loginSuccessful);
                             isLoggedIn = true;
                         } else {
                             Response loginError = new ServerErrorResponse(ServerErrorResponse.Type.LOGIN_TAKEN, "Username taken");

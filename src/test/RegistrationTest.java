@@ -8,6 +8,7 @@ import org.junit.Test;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import protocol.InterfaceAdapter;
+import protocol.Message;
 import protocol.Registration;
 import protocol.Request;
 import protocol.Response;
@@ -27,10 +28,7 @@ public class RegistrationTest extends ServerTest {
      * Tests the serialization and deserialization of a LoginRequest
      */
     public void serializeTest() {
-        Gson gson = new GsonBuilder()
-                            .registerTypeAdapter(Request.class, new InterfaceAdapter<Request>())
-                            .registerTypeAdapter(Response.class, new InterfaceAdapter<Response>())
-                            .create();
+        Gson gson = new GsonBuilder().registerTypeAdapter(Request.class, new InterfaceAdapter<Request>()).registerTypeAdapter(Response.class, new InterfaceAdapter<Response>()).registerTypeAdapter(Message.class, new InterfaceAdapter<Message>()).create();
         
         Request request = new Registration.LoginRequest("benbitdiddle");
         String json = gson.toJson(request,Request.class); 
