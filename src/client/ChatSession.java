@@ -63,10 +63,8 @@ public class ChatSession {
     }
 
     public synchronized void addChatWindow(ChatWindow c) {
-        activeChatWindows.put(c.getName(),c);
-        if (prevChatWindows.containsKey(c.getName())){
-            prevChatWindows.remove(c.getName());
-        }
+        activeChatWindows.put(c.getName(), prevChatWindows.remove(c.getName()));
+
         //adjust the table to reflect the new ChatWindow
         synchronized(gui.getTableModelLock()) {
             gui.chatWindowsTableModel.addRow(new String[] {"Yes",
@@ -77,8 +75,7 @@ public class ChatSession {
     }
 
     public synchronized void removeChatWindow(ChatWindow c) {
-        activeChatWindows.remove(c.getName());
-        prevChatWindows.put(c.getName(), c);
+        prevChatWindows.put(c.getName(), activeChatWindows.remove(c.getName()));
         //adjust active indictor
         synchronized(gui.getTableModelLock()) {
             //locate the correct row
@@ -144,6 +141,20 @@ public class ChatSession {
         gui.writeToWindow("There are " + users.size() + "users in the room.");
         for(String user: users) {
             gui.writeToWindow(user);
+        }
+    }
+    
+    public  void viewHistory(String nameOfRoom) {
+        if (activeChatWindows.containsKey(nameOfRoom)){
+            ChatWindow c = activeChatWindows.get(nameOfRoom);
+            gui.writeToHistoryWindow(c.getMessages());
+        }
+        else if (prevChatWindows.containsKey(nameOfRoom)){
+            ChatWindow c = prevChatWindows.get(nameOfRoom);
+            gui.writeToHistoryWindow(c.getMessages());
+        }
+        else{
+            //gui.writeToHistoryWindow(null);
         }
     }
 

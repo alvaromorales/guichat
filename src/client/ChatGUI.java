@@ -14,6 +14,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.util.List;
 
 import protocol.Message;
 import protocol.SimpleMessage;
@@ -306,7 +307,7 @@ public class ChatGUI extends JFrame {
         jMenuItem9.setText("Select Room");
         jMenuItem9.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                saveConversation(e);
+                selectHistory(e);
             }
         });
         fileMenu.add(jMenuItem5);
@@ -380,6 +381,16 @@ public class ChatGUI extends JFrame {
     public synchronized void writeToWindow(String text) {
         chatTextArea.append(text);
         scrollToBottomOfChatWindow();
+    }
+    
+    public synchronized void writeToHistoryWindow(List<Message> messages) {
+       JTextArea textArea = new JTextArea(100, 250);
+       for (int i = 0; i < messages.size(); i++){
+           textArea.append(messages.get(i).getUsername() + ":" + messages.get(i).getMessage());
+       }
+       JScrollPane scrollPane = new JScrollPane(textArea); 
+       textArea.setEditable(false);
+       JOptionPane.showMessageDialog(null, scrollPane);
     }
 
     private void clearWindow() {
@@ -537,6 +548,21 @@ public class ChatGUI extends JFrame {
     private void saveConversation(ActionEvent e) {
         if (isConnected) {
             chatSession.saveConversation(currentChatWindow);
+        }
+    }
+    
+    private void selectHistory(ActionEvent e) {
+        if (isConnected) {
+            Object[] possibilities = chatSession.getAvailableChatRooms(); //get the list of rooms
+            String roomName = (String)JOptionPane.showInputDialog(
+                    this,
+                    "What room history would you like to view?",
+                    "Select Room",
+                    JOptionPane.PLAIN_MESSAGE,
+                    null,
+                    possibilities,
+                    possibilities[0]);
+            chatSession.viewHistory(roomName);
         }
     }
 
