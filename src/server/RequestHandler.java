@@ -3,6 +3,7 @@ package server;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
@@ -42,11 +43,9 @@ public class RequestHandler implements Runnable {
          */
         @Override
         public synchronized Void visit(SendMessageRequest message) {
-            synchronized (chatRooms) {
-                ChatRoom room = chatRooms.get(message.getRoomName());
-                room.broadcastResponse(message);
-                return null;
-            }
+            ChatRoom room = chatRooms.get(message.getRoomName());
+            room.broadcastResponse(message);
+            return null;
         }
 
         /**
@@ -55,15 +54,15 @@ public class RequestHandler implements Runnable {
         @Override
         public synchronized Void visit(GetUsersInRoomRequest request) {
             User u = usersMap.get(request.getUsername());
-            synchronized (chatRooms) {
-                ChatRoom room = chatRooms.get(request.getRoomName());
-                if (room == null) {
-                    u.sendResponse(new UsersInRoomResponse(request.getRoomName(), new ArrayList<String>(0)));
-                } else {
-                    u.sendResponse(new UsersInRoomResponse(request.getRoomName(), room.getUsers()));
-                }
-                return null;
+            ChatRoom room = chatRooms.get(request.getRoomName());
+
+            if (room == null) {
+                u.sendResponse(new UsersInRoomResponse(request.getRoomName(), new ArrayList<String>(0)));
+            } else {
+                u.sendResponse(new UsersInRoomResponse(request.getRoomName(), room.getUsers()));
             }
+
+            return null;
         }
 
         /**
@@ -71,15 +70,16 @@ public class RequestHandler implements Runnable {
          */
         @Override
         public synchronized Void visit(LogoutRequest request) {
-            synchronized (usersMap) {
-                usersMap.get(request.getUsername()).disconnect();
-                usersMap.remove(request.getUsername());
-            }
-            
+            usersMap.get(request.getUsername()).disconnect();
+            usersMap.remove(request.getUsername());
+
             synchronized (chatRooms) {
-                for (ChatRoom room : chatRooms.values()) {
-                    room.removeUser(request.getUsername());
+                Iterator<ChatRoom> iterator = chatRooms.values().iterator();
+                
+                while(iterator.hasNext()) {
+                    iterator.next().removeUser(request.getUsername());
                 }
+
             }
 
             return null;
@@ -93,9 +93,12 @@ public class RequestHandler implements Runnable {
         public synchronized Void visit(StopServer request) {
             synchronized (usersMap) {
                 running.set(false);
-                for (User u: usersMap.values()) {
-                    u.disconnect();
+                Iterator<User> iterator = usersMap.values().iterator();
+                
+                while(iterator.hasNext()) {
+                    iterator.next().disconnect();
                 }
+
                 return null;
             }
         }
@@ -105,24 +108,22 @@ public class RequestHandler implements Runnable {
          */
         @Override
         public synchronized Void visit(JoinOrCreateRoomRequest request) {
-            synchronized (chatRooms) {
-                if (chatRooms.get(request.getRoomName()) != null) {
-                    // add user to room
-                    chatRooms.get(request.getRoomName()).addUser(request.getUsername());
-                } else {
-                    // create a room and add user to it
-                    chatRooms.put(request.getRoomName(), new ChatRoom(request.getRoomName(), usersMap));
-                    chatRooms.get(request.getRoomName()).addUser(request.getUsername());
-                    broadastResponse(new AvailableChatRoomsResponse(getAvailableChatRooms()));
-                }
-
-                // send confirmation
-                usersMap.get(request.getUsername()).sendResponse(new JoinedRoomResponse(request.getRoomName(), chatRooms.get(request.getRoomName()).getUsers()));
-                
-                // notify users that the user joined
-                chatRooms.get(request.getRoomName()).broadcastResponse(new UserJoinOrLeaveRoomResponse(request.getUsername(),request.getRoomName(),true), request.getUsername());
-                return null;
+            if (chatRooms.get(request.getRoomName()) != null) {
+                // add user to room
+                chatRooms.get(request.getRoomName()).addUser(request.getUsername());
+            } else {
+                // create a room and add user to it
+                chatRooms.put(request.getRoomName(), new ChatRoom(request.getRoomName(), usersMap));
+                chatRooms.get(request.getRoomName()).addUser(request.getUsername());
+                broadastResponse(new AvailableChatRoomsResponse(getAvailableChatRooms()));
             }
+
+            // send confirmation
+            usersMap.get(request.getUsername()).sendResponse(new JoinedRoomResponse(request.getRoomName(), chatRooms.get(request.getRoomName()).getUsers()));
+
+            // notify users that the user joined
+            chatRooms.get(request.getRoomName()).broadcastResponse(new UserJoinOrLeaveRoomResponse(request.getUsername(),request.getRoomName(),true), request.getUsername());
+            return null;
         }
 
         /**
@@ -130,16 +131,14 @@ public class RequestHandler implements Runnable {
          */
         @Override
         public synchronized Void visit(LeaveRoomRequest request) {
-            synchronized (chatRooms) {
-                ChatRoom room = chatRooms.get(request.getRoomName());
-                room.removeUser(request.getUsername());
+            ChatRoom room = chatRooms.get(request.getRoomName());
+            room.removeUser(request.getUsername());
 
-                if (room.isEmpty()) {
-                    chatRooms.remove(request.getRoomName());
-                    broadastResponse(new AvailableChatRoomsResponse(getAvailableChatRooms()));
-                } else {
-                    room.broadcastResponse(new UserJoinOrLeaveRoomResponse(request.getUsername(), request.getRoomName(), false));
-                }
+            if (room.isEmpty()) {
+                chatRooms.remove(request.getRoomName());
+                broadastResponse(new AvailableChatRoomsResponse(getAvailableChatRooms()));
+            } else {
+                room.broadcastResponse(new UserJoinOrLeaveRoomResponse(request.getUsername(), request.getRoomName(), false));
             }
 
             return null;
@@ -176,7 +175,7 @@ public class RequestHandler implements Runnable {
     public void stop() {
         requestQueue.offer(new StopServer());
     }
-    
+
     /**
      * Gets a list of names of available chat rooms
      * @return a list of names of available chat rooms
@@ -184,21 +183,24 @@ public class RequestHandler implements Runnable {
     public synchronized List<String> getAvailableChatRooms() {
         synchronized (chatRooms) {
             List<String> rooms = new ArrayList<String>();
-            for (ChatRoom room : chatRooms.values()) {
-                rooms.add(room.getName());
+            Iterator<ChatRoom> iterator = chatRooms.values().iterator();
+            
+            while(iterator.hasNext()) {
+                rooms.add(iterator.next().getName());
             }
             
             return rooms;
         }
     }
-    
+
     /**
      * Broadcasts a response to all connected users
      */
     public synchronized void broadastResponse(Response response) {
         synchronized (usersMap) {
-            for (User u: usersMap.values()) {
-                u.sendResponse(response);
+            Iterator<User> iterator = usersMap.values().iterator();
+            while (iterator.hasNext()) {
+                iterator.next().sendResponse(response);
             }
         }
     }
