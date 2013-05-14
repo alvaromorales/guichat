@@ -387,13 +387,19 @@ public class ChatGUI extends JFrame {
     
     public synchronized void writeToHistoryWindow(List<Message> messages) {
        JTextArea textArea = new JTextArea(100, 250);
-       String history = "";
        for (int i = 0; i < messages.size(); i++){
-           history = history + messages.get(i).getUsername() + ":" + messages.get(i).getMessage() + "\n";
+           textArea.append(messages.get(i).getUsername() + ":" + messages.get(i).getMessage() + "\n");
        }
-       JScrollPane scrollPane = new JScrollPane(textArea); 
        textArea.setEditable(false);
-       JOptionPane.showMessageDialog(null, history);
+       textArea.setColumns(30);
+       textArea.setLineWrap( true );
+       textArea.setWrapStyleWord( true );
+       textArea.setSize(textArea.getPreferredSize().width, 1);
+       JScrollPane scrollPane = new JScrollPane(textArea);
+       scrollPane.setPreferredSize(new Dimension(100, 250));
+       JOptionPane.showMessageDialog(
+        null, scrollPane, "Chat History", JOptionPane.PLAIN_MESSAGE);
+
     }
 
     public void clearWindow() {
@@ -476,15 +482,21 @@ public class ChatGUI extends JFrame {
     private void connectToRoom(ActionEvent e) {
         if (isConnected) {
             Object[] possibilities = chatSession.getAvailableChatRooms(); //get the list of rooms
-            String roomName = (String)JOptionPane.showInputDialog(
-                    this,
-                    "What room would you like to join?",
-                    "Connect to Room",
-                    JOptionPane.PLAIN_MESSAGE,
-                    null,
-                    possibilities,
-                    possibilities[0]);
-            chatSession.joinChatWindow(roomName);
+            if (possibilities.length == 0){
+                JOptionPane.showMessageDialog(
+                        null, "There are no rooms to join, create room first!", "Please create a room", JOptionPane.WARNING_MESSAGE);
+            }
+            else{
+                String roomName = (String)JOptionPane.showInputDialog(
+                        this,
+                        "What room would you like to join?",
+                        "Connect to Room",
+                        JOptionPane.PLAIN_MESSAGE,
+                        null,
+                        possibilities,
+                        possibilities[0]);
+                chatSession.joinChatWindow(roomName);
+            }
         }
     }
 
