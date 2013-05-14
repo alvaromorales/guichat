@@ -13,10 +13,12 @@ import com.google.gson.*;
 import protocol.InterfaceAdapter;
 import protocol.Registration;
 import protocol.Registration.*;
+import protocol.AvailableChatRoomsResponse;
 import protocol.Message;
 import protocol.Request;
 import protocol.Response;
 import protocol.ServerErrorResponse;
+import protocol.UsersInRoomResponse;
 
 /**
  * Represents a user connected to the Server
@@ -72,6 +74,7 @@ public class User implements Runnable {
                             Response loginSuccessful = new LoginResponse(loginRequest.getUsername());
                             this.username = loginRequest.getUsername();
                             sendResponse(loginSuccessful);
+                            System.out.println("LOGIN: " + loginSuccessful);
                             isLoggedIn = true;
                         } else {
                             Response loginError = new ServerErrorResponse(ServerErrorResponse.Type.LOGIN_TAKEN, "Username taken");
