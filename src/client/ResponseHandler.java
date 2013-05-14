@@ -34,7 +34,8 @@ public class ResponseHandler implements Runnable {
             //we know that the client was successfully logged in
             session.gui.setIsConnected(true);
             session.gui.writeToWindow("System Message: You have been successfully " +
-                                      "logged in with the username " + response.getUsername());
+                                      "logged in with the username " + response.getUsername() + "\n");
+            session.setUsername(response.getUsername());
             return null;
         }
 
@@ -57,7 +58,7 @@ public class ResponseHandler implements Runnable {
         public Void visit(ServerErrorResponse response) {
             if (response.getType().equals(Type.LOGIN_TAKEN)) {
                 session.gui.writeToWindow("System Message: Login failed. " +
-                                          "The username you requested is taken.");
+                                          "The username you requested is taken.\n");
             } else if (response.getType().equals(Type.UNAUTHORIZED)) {
                 session.gui.writeToWindow("System Message: " + response.getError());
             }

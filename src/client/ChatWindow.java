@@ -21,6 +21,7 @@ public class ChatWindow {
     public ChatWindow(String name) {
         this.name = name;
         this.messages = Collections.synchronizedList(new ArrayList<Message>());
+        this.users = Collections.synchronizedList(new ArrayList<String>());
     }
 
     public void setMessgeCountToZero() {
@@ -30,7 +31,7 @@ public class ChatWindow {
     public synchronized void addMessage(Message m, ChatGUI gui) {
         this.messages.add(m);
         if (this.equals(gui.getCurrentChatWindow())) { //ChatWindow is current
-            gui.writeToWindow(m.getUsername() + ":" + m.getMessage());
+            gui.writeToWindow(m.getUsername() + ":" + m.getMessage() + "\n");
         } else { //ChatWindow is not open. Modify sidebar
             unreadCount += 1;
             //adjust the table to reflect the unread message count
@@ -49,7 +50,7 @@ public class ChatWindow {
     public synchronized void addUser(String username, ChatGUI gui) {
         this.users.add(username);
         if (this.equals(gui.getCurrentChatWindow())) { //ChatWindow is current
-            gui.writeToWindow("System Message: " + username + " has joined the chat room.");
+            gui.writeToWindow("System Message: " + username + " has joined the chat room." + "\n");
         } else { //ChatWindow is not open. 
             //adjust the table to reflect the number of users
             synchronized(gui.getTableModelLock()) {
@@ -68,7 +69,7 @@ public class ChatWindow {
         this.users.remove(username);
         this.users.add(username);
         if (this.equals(gui.getCurrentChatWindow())) { //ChatWindow is current
-            gui.writeToWindow("System Message: " + username + " has left the chat room.");
+            gui.writeToWindow("System Message: " + username + " has left the chat room." + "\n");
         } else { //ChatWindow is not open. 
             //adjust the table to reflect the number of users
             synchronized(gui.getTableModelLock()) {

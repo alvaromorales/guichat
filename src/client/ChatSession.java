@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -36,13 +37,14 @@ public class ChatSession {
     Thread responseListener;
     Thread responseHandler;
     Gson requestGson;
-    String username;
+    String username = "";
     ChatGUI gui;
 
     public ChatSession(Socket socket, ChatGUI gui) {
         try {
+            this.responseQueue = new LinkedBlockingQueue<Response>();
             this.gui = gui;
-            this.requestGson = new GsonBuilder().registerTypeAdapter(Request.class, new InterfaceAdapter<Request>()).registerTypeAdapter(Response.class, new InterfaceAdapter<Response>()).create();
+            this.requestGson = new GsonBuilder().registerTypeAdapter(Request.class, new InterfaceAdapter<Request>()).registerTypeAdapter(Response.class, new InterfaceAdapter<Response>()).registerTypeAdapter(Message.class, new InterfaceAdapter<Message>()).create();
             this.output = new PrintWriter(
                               new OutputStreamWriter(
                                 socket.getOutputStream()));
@@ -60,6 +62,10 @@ public class ChatSession {
         } catch (IOException e) {
             e.printStackTrace();
         }        
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public synchronized void addChatWindow(ChatWindow c) {
@@ -123,8 +129,8 @@ public class ChatSession {
     public void sendMessage(ChatWindow c, Message m) {
         //add message to the chatwindow and gui window
         c.addMessage(m, gui);
-        Request createRoomRequest = new SendMessageRequest(gui.username, c.getName(), m);
-        sendRequest(createRoomRequest);
+        Request sendMessageRequest = new SendMessageRequest(gui.username, c.getName(), m);
+        sendRequest(sendMessageRequest);
     }
 
     public  void createChatWindow(String nameOfRoom) {

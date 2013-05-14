@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import protocol.InterfaceAdapter;
+import protocol.Message;
 import protocol.Registration;
 import protocol.Request;
 import protocol.Response;
@@ -65,9 +66,7 @@ public class RequestTester implements Runnable {
     public RequestTester(String username, DelayQueue<DelayedRequest> requests, int expectedResponses) {
         try {
             this.expectedResponses = expectedResponses;
-            this.gson = new GsonBuilder().registerTypeAdapter(Request.class, new InterfaceAdapter<Request>())
-                    .registerTypeAdapter(Response.class, new InterfaceAdapter<Response>())
-                    .create();
+            this.gson = new GsonBuilder().registerTypeAdapter(Request.class, new InterfaceAdapter<Request>()).registerTypeAdapter(Response.class, new InterfaceAdapter<Response>()).registerTypeAdapter(Message.class, new InterfaceAdapter<Message>()).create();
             this.responseList = new ArrayList<Response>();
             this.username = username;
 
