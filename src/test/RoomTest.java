@@ -114,33 +114,4 @@ public class RoomTest extends ServerTest {
 
         stopServer(server);
     }
-
-    /**
-     * Tests that the user "benbitdiddle" can join a room named "foo", and then leave it
-     */
-    //@Test
-    public void joinAndLeaveRoomTest() throws InterruptedException {
-        Server server = new Server(SERVER_PORT);
-        startServer(server);
-
-        DelayQueue<DelayedRequest> requestQueue = new DelayQueue<DelayedRequest>();
-        requestQueue.add(new DelayedRequest(new JoinOrCreateRoomRequest("benbitdiddle", "foo"), 0));
-        requestQueue.add(new DelayedRequest(new LeaveRoomRequest("benbitdiddle", "foo"), 10));
-
-        RequestTester test = new RequestTester("benbitdiddle", requestQueue, 3);
-        Thread t = new Thread(test);
-        t.start();
-        t.join();
-
-        List<Response> expected = new ArrayList<Response>();
-        expected.add(new LoginResponse("benbitdiddle"));
-        List<String> usersExpected = new ArrayList<String>();
-        usersExpected.add("benbitdiddle");
-        expected.add(new JoinedRoomResponse("foo",usersExpected));
-        expected.add(new LeftRoomResponse("foo"));
-        assertEquals(expected,test.getResponseList());
-
-        stopServer(server);
-    }
-
 }
