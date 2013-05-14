@@ -12,6 +12,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.Map;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.util.List;
@@ -423,19 +425,50 @@ public class ChatGUI extends JFrame {
                 int selectedRow = chatWindowsTable.getSelectedRow();
                 String roomName = (String) chatWindowsTableModel.getValueAt(selectedRow, 1);
                 //located room
-                currentChatWindow = chatSession.getActiveChatWindow(roomName);
-                //set number of unread messages in currentChatWindow to 0
-                System.out.println("currentChatWindow :" + currentChatWindow);
-                currentChatWindow.setMessageCountToZero();
-                chatWindowsTableModel.setValueAt(0,selectedRow,3);
-                //refresh chat history window with messages from the selected chat window
-                clearWindow();
-                for (Message m: currentChatWindow.getMessages()) {
-                    writeToWindow(m.getUsername() + ":" + m.getMessage()+"\n");
+                Map<String, ChatWindow>  chatWindows = chatSession.getActiveChatWindows();
+                Map<String, ChatWindow>  prevChatWindows = chatSession.getPrevChatWindows();
+                if (chatWindows.containsKey(roomName)) {
+                    currentChatWindow = chatWindows.get(roomName);
+                    //set number of unread messages in currentChatWindow to 0
+                    System.out.println("currentChatWindow :" + currentChatWindow);
+                    currentChatWindow.setMessageCountToZero();
+                    chatWindowsTableModel.setValueAt(0,selectedRow,3);
+                    //refresh chat history window with messages from the selected chat window
+                    clearWindow();
+                    for (Message m: currentChatWindow.getMessages()) {
+                        writeToWindow(m.getUsername() + ":" + m.getMessage()+"\n");
+                    }
+                    //set label to the title of the current room
+                    messageLabel.setText(currentChatWindow.getName());
+                } else if (prevChatWindows.containsKey(roomName)) {
+                    chatSession.joinChatWindow(roomName);
+                    clearWindow();
                 }
-                //set label to the title of the current room
-                messageLabel.setText(currentChatWindow.getName());
+                
             } 
+        }
+    }
+
+    public void reload(String name) {
+        synchronized(tableModelLock) {
+            //locate the correct row
+            for (int row = 0; row < chatWindowsTableModel.getRowCount(); row++) {
+                if (((String) chatWindowsTableModel.getValueAt(row, 1)).equals(name)) {
+                    currentChatWindow = chatSession.getActiveChatWindow(name);
+                    //set number of unread messages in currentChatWindow to 0
+                    System.out.println("currentChatWindow :" + currentChatWindow);
+                    currentChatWindow.setMessageCountToZero();
+                    chatWindowsTableModel.setValueAt(0,row,3);
+                    //refresh chat history window with messages from the selected chat window
+                    clearWindow();
+                    for (Message m: currentChatWindow.getMessages()) {
+                        writeToWindow(m.getUsername() + ":" + m.getMessage()+"\n");
+                    }
+                    //set label to the title of the current room
+                    messageLabel.setText(currentChatWindow.getName());
+                    break;
+                }
+            }
         }
     }
 
