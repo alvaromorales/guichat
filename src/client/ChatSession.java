@@ -70,7 +70,12 @@ public class ChatSession {
     }
 
     public synchronized void addChatWindow(ChatWindow c) {
-        activeChatWindows.put(c.getName(), prevChatWindows.remove(c.getName()));
+
+        if (prevChatWindows.containsKey(c.getName())) {
+            activeChatWindows.put(c.getName(), prevChatWindows.remove(c.getName()));
+        } else {
+            activeChatWindows.put(c.getName(), c);
+        }
 
         //adjust the table to reflect the new ChatWindow
         synchronized(gui.getTableModelLock()) {

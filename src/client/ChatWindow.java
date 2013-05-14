@@ -24,7 +24,7 @@ public class ChatWindow {
         this.users = Collections.synchronizedList(new ArrayList<String>());
     }
 
-    public void setMessgeCountToZero() {
+    public void setMessageCountToZero() {
         unreadCount = 0;
     }
 

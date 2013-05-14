@@ -425,7 +425,8 @@ public class ChatGUI extends JFrame {
                 //located room
                 currentChatWindow = chatSession.getActiveChatWindow(roomName);
                 //set number of unread messages in currentChatWindow to 0
-                currentChatWindow.setMessgeCountToZero();
+                System.out.println("currentChatWindow :" + currentChatWindow);
+                currentChatWindow.setMessageCountToZero();
                 chatWindowsTableModel.setValueAt(0,selectedRow,3);
                 //refresh chat history window with messages from the selected chat window
                 clearWindow();
