@@ -1,6 +1,9 @@
 package client;
 
+import java.awt.List;
+
 import protocol.Registration.LoginResponse;
+
 import protocol.Response;
 import protocol.RoomResponse.JoinedRoomResponse;
 import protocol.RoomResponse.LeftRoomResponse;
@@ -9,6 +12,7 @@ import protocol.ServerErrorResponse.Type;
 import protocol.ServerErrorResponse;
 import protocol.UserJoinOrLeaveRoomResponse;
 import protocol.UsersInRoomResponse;
+import protocol.Message;
 
 /**
  * Represents a RequestHandler thread
@@ -81,12 +85,16 @@ public class ResponseHandler implements Runnable {
             return null;
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public Void visit(UserJoinOrLeaveRoomResponse response) {
             ChatWindow c = session.getActiveChatWindows().get(response.getRoomName());
             String username = response.getUsername();
             if (response.isJoining()) { //joining room
                 c.addUser(username, session.gui);
+                List prevMessages = (List) session.getPrevChatWindows().get(response.getRoomName()).getMessages();
+                session.getActiveChatWindows().get(response.getRoomName()).addPrevMessage((java.util.List<Message>) prevMessages,session.gui)
+                ;
             } else { //exiting room
                 c.removeUser(username, session.gui);
             }

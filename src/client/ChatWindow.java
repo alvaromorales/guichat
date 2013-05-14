@@ -44,6 +44,14 @@ public class ChatWindow {
             }
         }
     }
+    
+    public synchronized void addPrevMessage(List<Message> m, ChatGUI gui) {
+        for(int i = 0; i < m.size(); i++){
+            this.messages.add(m.get(i));
+            //no check needed to see if windows is active, this method is only called on joining a room
+            gui.writeToWindow(m.get(i).getUsername() + ":" + m.get(i).getMessage());
+        }
+    }
 
     public synchronized void addUser(String username, ChatGUI gui) {
         this.users.add(username);
