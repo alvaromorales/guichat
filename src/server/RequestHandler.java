@@ -12,8 +12,8 @@ import protocol.Registration.*;
 import protocol.Request;
 import protocol.RoomRequest.*;
 import protocol.RoomResponse.*;
-import protocol.AvailableChatRoomsResponse;
-import protocol.GetListOfAvailableRoomsRequest;
+import protocol.AvailableRoomsResponse;
+import protocol.AvailableRoomsRequest;
 import protocol.Response;
 import protocol.SendMessageRequest;
 import protocol.StopServer;
@@ -115,7 +115,7 @@ public class RequestHandler implements Runnable {
                 // create a room and add user to it
                 chatRooms.put(request.getRoomName(), new ChatRoom(request.getRoomName(), usersMap));
                 chatRooms.get(request.getRoomName()).addUser(request.getUsername());
-                broadastResponse(new AvailableChatRoomsResponse(getAvailableChatRooms()));
+                broadastResponse(new AvailableRoomsResponse(getAvailableChatRooms()));
             }
 
             // send confirmation
@@ -136,7 +136,7 @@ public class RequestHandler implements Runnable {
 
             if (room.isEmpty()) {
                 chatRooms.remove(request.getRoomName());
-                broadastResponse(new AvailableChatRoomsResponse(getAvailableChatRooms()));
+                broadastResponse(new AvailableRoomsResponse(getAvailableChatRooms()));
             } else {
                 room.broadcastResponse(new UserJoinOrLeaveRoomResponse(request.getUsername(), request.getRoomName(), false));
             }
@@ -148,8 +148,8 @@ public class RequestHandler implements Runnable {
          * Sends a list of available rooms
          */
         @Override
-        public Void visit(GetListOfAvailableRoomsRequest request) {
-            usersMap.get(request.getUsername()).sendResponse(new AvailableChatRoomsResponse(getAvailableChatRooms()));
+        public Void visit(AvailableRoomsRequest request) {
+            usersMap.get(request.getUsername()).sendResponse(new AvailableRoomsResponse(getAvailableChatRooms()));
             return null;
         }
     }

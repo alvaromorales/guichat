@@ -16,7 +16,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import protocol.GetListOfAvailableRoomsRequest;
+import protocol.AvailableRoomsRequest;
 import protocol.InterfaceAdapter;
 import protocol.Message;
 import protocol.Registration;
@@ -33,7 +33,7 @@ public class ChatSession {
     BufferedReader input;
     Map<String, ChatWindow> activeChatWindows;
     Map<String, ChatWindow> prevChatWindows;
-    List<String> avaibleChatRooms;
+    List<String> availableChatRooms;
     BlockingQueue<Response> responseQueue;
     Thread responseListener;
     Thread responseHandler;
@@ -70,10 +70,8 @@ public class ChatSession {
     }
 
     public synchronized void addChatWindow(ChatWindow c) {
-        activeChatWindows.put(c.getName(),c);
-        if (prevChatWindows.containsKey(c.getName())){
-            prevChatWindows.remove(c.getName());
-        }
+        activeChatWindows.put(c.getName(), prevChatWindows.remove(c.getName()));
+
         //adjust the table to reflect the new ChatWindow
         synchronized(gui.getTableModelLock()) {
             gui.chatWindowsTableModel.addRow(new String[] {"Yes",
@@ -84,8 +82,7 @@ public class ChatSession {
     }
 
     public synchronized void removeChatWindow(ChatWindow c) {
-        activeChatWindows.remove(c.getName());
-        prevChatWindows.put(c.getName(), c);
+        prevChatWindows.put(c.getName(), activeChatWindows.remove(c.getName()));
         //adjust active indictor
         synchronized(gui.getTableModelLock()) {
             //locate the correct row
@@ -116,6 +113,10 @@ public class ChatSession {
 
     public String getUsername() {
         return username;
+    }
+
+    public void setAvailableChatRooms(List<String> avaibleChatRooms) {
+        this.availableChatRooms = avaibleChatRooms;
     }
 
     /**
@@ -153,6 +154,20 @@ public class ChatSession {
             gui.writeToWindow(user);
         }
     }
+    
+    public  void viewHistory(String nameOfRoom) {
+        if (activeChatWindows.containsKey(nameOfRoom)){
+            ChatWindow c = activeChatWindows.get(nameOfRoom);
+            gui.writeToHistoryWindow(c.getMessages());
+        }
+        else if (prevChatWindows.containsKey(nameOfRoom)){
+            ChatWindow c = prevChatWindows.get(nameOfRoom);
+            gui.writeToHistoryWindow(c.getMessages());
+        }
+        else{
+            //gui.writeToHistoryWindow(null);
+        }
+    }
 
     public void closeChatWindow(ChatWindow c) {
         //TODO modify the gui
@@ -166,7 +181,7 @@ public class ChatSession {
     }
 
     public String[] getAvailableChatRooms() {
-        return avaibleChatRooms.toArray(new String[avaibleChatRooms.size()]);
+        return availableChatRooms.toArray(new String[availableChatRooms.size()]);
     }
 
     public void sendLoginRequest() {
@@ -176,7 +191,7 @@ public class ChatSession {
     } 
 
     public void sendRequestForAvaibleRooms() {
-        Request request = new GetListOfAvailableRoomsRequest(username);
+        Request request = new AvailableRoomsRequest(username);
         sendRequest(request);
     }
 

@@ -1,10 +1,8 @@
 package client;
 
-import java.awt.List;
-
 import protocol.Registration.LoginResponse;
 
-import protocol.AvailableChatRoomsResponse;
+import protocol.AvailableRoomsResponse;
 import protocol.Response;
 import protocol.RoomResponse.JoinedRoomResponse;
 import protocol.RoomResponse.LeftRoomResponse;
@@ -13,7 +11,6 @@ import protocol.ServerErrorResponse.Type;
 import protocol.ServerErrorResponse;
 import protocol.UserJoinOrLeaveRoomResponse;
 import protocol.UsersInRoomResponse;
-import protocol.Message;
 
 /**
  * Represents a RequestHandler thread
@@ -41,6 +38,7 @@ public class ResponseHandler implements Runnable {
             session.gui.writeToWindow("System Message: You have been successfully " +
                                       "logged in with the username " + response.getUsername() + "\n");
             session.setUsername(response.getUsername());
+            session.sendRequestForAvaibleRooms();
             return null;
         }
 
@@ -86,17 +84,13 @@ public class ResponseHandler implements Runnable {
             // TODO Auto-generated method stub
             return null;
         }
-
-        @SuppressWarnings("unchecked")
+        
         @Override
         public Void visit(UserJoinOrLeaveRoomResponse response) {
             ChatWindow c = session.getActiveChatWindows().get(response.getRoomName());
             String username = response.getUsername();
             if (response.isJoining()) { //joining room
                 c.addUser(username, session.gui);
-                List prevMessages = (List) session.getPrevChatWindows().get(response.getRoomName()).getMessages();
-                session.getActiveChatWindows().get(response.getRoomName()).addPrevMessage((java.util.List<Message>) prevMessages,session.gui)
-                ;
             } else { //exiting room
                 c.removeUser(username, session.gui);
             }
@@ -104,8 +98,8 @@ public class ResponseHandler implements Runnable {
         }
 
         @Override
-        public Void visit(AvailableChatRoomsResponse availableChatRoomsResponse) {
-            // TODO Auto-generated method stub
+        public Void visit(AvailableRoomsResponse response) {
+            session.setAvailableChatRooms(response.getRooms());
             return null;
         }
     }
