@@ -39,6 +39,7 @@ public class ChatWindow {
                 for (int row = 0; row < gui.chatWindowsTableModel.getRowCount(); row++) {
                     if (((String) gui.chatWindowsTableModel.getValueAt(row, 1)).equals(name)) {
                         gui.chatWindowsTableModel.setValueAt(unreadCount,row,3);
+                        break;
                     }
                 }
             }
@@ -56,6 +57,7 @@ public class ChatWindow {
                 for (int row = 0; row < gui.chatWindowsTableModel.getRowCount(); row++) {
                     if (((String) gui.chatWindowsTableModel.getValueAt(row, 1)).equals(name)) {
                         gui.chatWindowsTableModel.setValueAt(users.size(),row,2);
+                        break;
                     }
                 }
             }
@@ -74,6 +76,7 @@ public class ChatWindow {
                 for (int row = 0; row < gui.chatWindowsTableModel.getRowCount(); row++) {
                     if (((String) gui.chatWindowsTableModel.getValueAt(row, 1)).equals(name)) {
                         gui.chatWindowsTableModel.setValueAt(users.size(),row,2);
+                        break;
                     }
                 }
             }

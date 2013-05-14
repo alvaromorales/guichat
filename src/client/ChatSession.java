@@ -67,13 +67,28 @@ public class ChatSession {
         if (prevChatWindows.containsKey(c.getName())){
             prevChatWindows.remove(c.getName());
         }
-        //TODO modify GUI as appropriate
+        //adjust the table to reflect the new ChatWindow
+        synchronized(gui.getTableModelLock()) {
+            gui.chatWindowsTableModel.addRow(new String[] {"Yes",
+                                                           c.getName(),
+                                                           c.getUsers().size(),
+                                                           c.getUnreadCount()});
+        }
     }
 
     public synchronized void removeChatWindow(ChatWindow c) {
         activeChatWindows.remove(c.getName());
         prevChatWindows.put(c.getName(), c);
-        //TODO modify GUI as appropriate
+        //adjust active indictor
+        synchronized(gui.getTableModelLock()) {
+            //locate the correct row
+            for (int row = 0; row < gui.chatWindowsTableModel.getRowCount(); row++) {
+                if (((String) gui.chatWindowsTableModel.getValueAt(row, 1)).equals(c.getName())) {
+                    gui.chatWindowsTableModel.setValueAt("No",row,0);
+                    break;
+                }
+            }
+        }
     }
 
     public Map<String, ChatWindow> getActiveChatWindows() {
