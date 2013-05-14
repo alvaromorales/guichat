@@ -385,13 +385,21 @@ public class ChatGUI extends JFrame {
     
     public synchronized void writeToHistoryWindow(List<Message> messages) {
        JTextArea textArea = new JTextArea(100, 250);
-       String history = "";
+       //String history = "";
        for (int i = 0; i < messages.size(); i++){
-           history = history + messages.get(i).getUsername() + ":" + messages.get(i).getMessage() + "\n";
+           //history = history + messages.get(i).getUsername() + ":" + messages.get(i).getMessage() + "\n";
+           textArea.append(messages.get(i).getUsername() + ":" + messages.get(i).getMessage() + "\n");
        }
-       JScrollPane scrollPane = new JScrollPane(textArea); 
        textArea.setEditable(false);
-       JOptionPane.showMessageDialog(null, history);
+       textArea.setColumns(30);
+       textArea.setLineWrap( true );
+       textArea.setWrapStyleWord( true );
+       textArea.setSize(textArea.getPreferredSize().width, 1);
+       JScrollPane scrollPane = new JScrollPane(textArea);
+       scrollPane.setPreferredSize(new Dimension(100, 250));
+       JOptionPane.showMessageDialog(
+        null, scrollPane, "Chat History", JOptionPane.PLAIN_MESSAGE);
+
     }
 
     private void clearWindow() {
