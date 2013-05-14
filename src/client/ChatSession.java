@@ -71,8 +71,8 @@ public class ChatSession {
         synchronized(gui.getTableModelLock()) {
             gui.chatWindowsTableModel.addRow(new String[] {"Yes",
                                                            c.getName(),
-                                                           c.getUsers().size(),
-                                                           c.getUnreadCount()});
+                                                           c.getUsers().size() + "",
+                                                           c.getUnreadCount() + ""});
         }
     }
 
