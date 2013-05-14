@@ -8,14 +8,14 @@ import client.ClientVisitor;
 /**
  * Represents a request or response with the list of available chat rooms
  */
-public class AvailableChatRoomsResponse implements Response {
+public class AvailableRoomsResponse implements Response {
     private List<String> rooms;
     
     /**
      * Creates a new AvailableChatRoomsResponse response object
      * @param rooms a list of the names of available chat rooms
      */
-    public AvailableChatRoomsResponse(List<String> rooms) {
+    public AvailableRoomsResponse(List<String> rooms) {
         this.rooms = rooms;
     }
     

@@ -16,7 +16,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import protocol.GetListOfAvailableRoomsRequest;
+import protocol.AvailableRoomsRequest;
 import protocol.InterfaceAdapter;
 import protocol.Message;
 import protocol.Registration;
@@ -33,7 +33,7 @@ public class ChatSession {
     BufferedReader input;
     Map<String, ChatWindow> activeChatWindows;
     Map<String, ChatWindow> prevChatWindows;
-    List<String> avaibleChatRooms;
+    List<String> availableChatRooms;
     BlockingQueue<Response> responseQueue;
     Thread responseListener;
     Thread responseHandler;
@@ -118,6 +118,10 @@ public class ChatSession {
         return username;
     }
 
+    public void setAvailableChatRooms(List<String> avaibleChatRooms) {
+        this.availableChatRooms = avaibleChatRooms;
+    }
+
     /**
      * Sends a request to the user
      * @param request the request to send
@@ -166,7 +170,7 @@ public class ChatSession {
     }
 
     public String[] getAvailableChatRooms() {
-        return avaibleChatRooms.toArray(new String[avaibleChatRooms.size()]);
+        return availableChatRooms.toArray(new String[availableChatRooms.size()]);
     }
 
     public void sendLoginRequest() {
@@ -176,7 +180,7 @@ public class ChatSession {
     } 
 
     public void sendRequestForAvaibleRooms() {
-        Request request = new GetListOfAvailableRoomsRequest(username);
+        Request request = new AvailableRoomsRequest(username);
         sendRequest(request);
     }
 

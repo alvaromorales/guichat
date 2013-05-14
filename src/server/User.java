@@ -13,12 +13,10 @@ import com.google.gson.*;
 import protocol.InterfaceAdapter;
 import protocol.Registration;
 import protocol.Registration.*;
-import protocol.AvailableChatRoomsResponse;
 import protocol.Message;
 import protocol.Request;
 import protocol.Response;
 import protocol.ServerErrorResponse;
-import protocol.UsersInRoomResponse;
 
 /**
  * Represents a user connected to the Server

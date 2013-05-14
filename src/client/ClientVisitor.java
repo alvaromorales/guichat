@@ -1,6 +1,6 @@
 package client;
 
-import protocol.AvailableChatRoomsResponse;
+import protocol.AvailableRoomsResponse;
 import protocol.Registration.LoginResponse;
 import protocol.RoomResponse.JoinedRoomResponse;
 import protocol.RoomResponse.LeftRoomResponse;
@@ -17,5 +17,5 @@ public interface ClientVisitor<E> {
     public E visit(SendMessageRequest response);
     public E visit(UsersInRoomResponse usersInRoomResponse);
     public E visit(UserJoinOrLeaveRoomResponse userJoinOrLeaveRoomResponse);
-    public E visit(AvailableChatRoomsResponse availableChatRoomsResponse);
+    public E visit(AvailableRoomsResponse availableChatRoomsResponse);
 }
