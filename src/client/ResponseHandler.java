@@ -35,8 +35,9 @@ public class ResponseHandler implements Runnable {
             //given that we have received a loginresponse
             //we know that the client was successfully logged in
             session.gui.setIsConnected(true);
+            session.gui.clearWindow();
             session.gui.writeToWindow("System Message: You have been successfully " +
-                                      "logged in with the username " + response.getUsername() + "\n");
+                                      "logged in with the username " + response.getUsername() + ".\n");
             session.setUsername(response.getUsername());
             session.sendRequestForAvaibleRooms();
             return null;

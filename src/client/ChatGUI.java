@@ -203,7 +203,7 @@ public class ChatGUI extends JFrame {
 
         //display messages label
         messageLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        messageLabel.setText("Chat Window"); //TODO dynamically set this
+        messageLabel.setText("Chat Window");
 
         //send button
         sendButton.setText("Send");
@@ -396,7 +396,7 @@ public class ChatGUI extends JFrame {
        JOptionPane.showMessageDialog(null, history);
     }
 
-    private void clearWindow() {
+    public void clearWindow() {
         chatTextArea.setText("");
     }
 
