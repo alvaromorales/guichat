@@ -46,6 +46,7 @@ public class ResponseHandler implements Runnable {
         public Void visit(JoinedRoomResponse response) {
             //create chat window
             ChatWindow c = new ChatWindow(response.getRoomName());
+            c.setUsers(response.getUsersInRoom());
             //add window to session
             session.addChatWindow(c);
             return null;

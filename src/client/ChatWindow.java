@@ -31,7 +31,7 @@ public class ChatWindow {
     public synchronized void addMessage(Message m, ChatGUI gui) {
         this.messages.add(m);
         if (this.equals(gui.getCurrentChatWindow())) { //ChatWindow is current
-            gui.writeToWindow(m.getUsername() + ":" + m.getMessage() + "\n");
+            gui.writeToWindow(m.getUsername() + ": " + m.getMessage() + "\n");
         } else { //ChatWindow is not open. Modify sidebar
             unreadCount += 1;
             //adjust the table to reflect the unread message count
@@ -52,14 +52,15 @@ public class ChatWindow {
         if (this.equals(gui.getCurrentChatWindow())) { //ChatWindow is current
             gui.writeToWindow("System Message: " + username + " has joined the chat room." + "\n");
         } else { //ChatWindow is not open. 
-            //adjust the table to reflect the number of users
-            synchronized(gui.getTableModelLock()) {
-                //locate the correct row
-                for (int row = 0; row < gui.chatWindowsTableModel.getRowCount(); row++) {
-                    if (((String) gui.chatWindowsTableModel.getValueAt(row, 1)).equals(name)) {
-                        gui.chatWindowsTableModel.setValueAt(users.size(),row,2);
-                        break;
-                    }
+            
+        }
+        //adjust the table to reflect the number of users
+        synchronized(gui.getTableModelLock()) {
+            //locate the correct row
+            for (int row = 0; row < gui.chatWindowsTableModel.getRowCount(); row++) {
+                if (((String) gui.chatWindowsTableModel.getValueAt(row, 1)).equals(name)) {
+                    gui.chatWindowsTableModel.setValueAt(users.size(),row,2);
+                    break;
                 }
             }
         }
@@ -71,14 +72,15 @@ public class ChatWindow {
         if (this.equals(gui.getCurrentChatWindow())) { //ChatWindow is current
             gui.writeToWindow("System Message: " + username + " has left the chat room." + "\n");
         } else { //ChatWindow is not open. 
-            //adjust the table to reflect the number of users
-            synchronized(gui.getTableModelLock()) {
-                //locate the correct row
-                for (int row = 0; row < gui.chatWindowsTableModel.getRowCount(); row++) {
-                    if (((String) gui.chatWindowsTableModel.getValueAt(row, 1)).equals(name)) {
-                        gui.chatWindowsTableModel.setValueAt(users.size(),row,2);
-                        break;
-                    }
+            
+        }
+        //adjust the table to reflect the number of users
+        synchronized(gui.getTableModelLock()) {
+            //locate the correct row
+            for (int row = 0; row < gui.chatWindowsTableModel.getRowCount(); row++) {
+                if (((String) gui.chatWindowsTableModel.getValueAt(row, 1)).equals(name)) {
+                    gui.chatWindowsTableModel.setValueAt(users.size(),row,2);
+                    break;
                 }
             }
         }
@@ -90,6 +92,10 @@ public class ChatWindow {
 
     public synchronized List<String> getUsers() {
         return this.users;
+    }
+
+    public synchronized void setUsers(List<String> users) {
+        this.users = users;
     }
 
     public String getName() {

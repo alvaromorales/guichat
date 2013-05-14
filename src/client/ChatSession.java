@@ -72,17 +72,29 @@ public class ChatSession {
     public synchronized void addChatWindow(ChatWindow c) {
 
         if (prevChatWindows.containsKey(c.getName())) {
-            activeChatWindows.put(c.getName(), prevChatWindows.remove(c.getName()));
+            ChatWindow oldC = prevChatWindows.remove(c.getName());
+            oldC.setUsers(c.getUsers());
+            activeChatWindows.put(c.getName(), oldC);
+            //adjust the table to reflect the new ChatWindow
+            synchronized(gui.getTableModelLock()) {
+                //locate the correct row
+                for (int row = 0; row < gui.chatWindowsTableModel.getRowCount(); row++) {
+                    if (((String) gui.chatWindowsTableModel.getValueAt(row, 1)).equals(oldC.getName())) {
+                        gui.chatWindowsTableModel.setValueAt(oldC.getUsers().size(),row,2);
+                        gui.chatWindowsTableModel.setValueAt("Yes",row,0);
+                        break;
+                    }
+                }
+            }
         } else {
             activeChatWindows.put(c.getName(), c);
-        }
-
-        //adjust the table to reflect the new ChatWindow
-        synchronized(gui.getTableModelLock()) {
-            gui.chatWindowsTableModel.addRow(new String[] {"Yes",
-                                                           c.getName(),
-                                                           c.getUsers().size() + "",
-                                                           c.getUnreadCount() + ""});
+            //adjust the table to reflect the new ChatWindow
+            synchronized(gui.getTableModelLock()) {
+                gui.chatWindowsTableModel.addRow(new String[] {"Yes",
+                                                               c.getName(),
+                                                               c.getUsers().size() + "",
+                                                               c.getUnreadCount() + ""});
+            }
         }
     }
 
