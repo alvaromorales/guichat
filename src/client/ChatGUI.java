@@ -108,8 +108,8 @@ public class ChatGUI extends JFrame {
     private JLabel avaiableChatRoomsLabel, messageLabel;
     private JButton sendButton;
     private JMenuBar menuBar;
-    private JMenu fileMenu, editMenu, helpMenu;
-    private JMenuItem jMenuItem1, jMenuItem2, jMenuItem3, jMenuItem4, jMenuItem5, jMenuItem6, jMenuItem7, jMenuItem8;
+    private JMenu fileMenu, editMenu, historyMenu, helpMenu;
+    private JMenuItem jMenuItem1, jMenuItem2, jMenuItem3, jMenuItem4, jMenuItem5, jMenuItem6, jMenuItem7, jMenuItem8, jMenuItem9;
     private final String startupMessage = "System Message: To connect to the chat server navigate to Connect to Server in the menu or press ctrl-d (or command-d on mac). " +
             "Type \"--help\" in the box below to get a list of avaible commands.\n";
     private final String helpCommands = "System Message: The available commands are as follows:\n" +
@@ -152,6 +152,7 @@ public class ChatGUI extends JFrame {
         menuBar = new JMenuBar();
         fileMenu = new JMenu();
         editMenu = new JMenu();
+        historyMenu = new JMenu();
         helpMenu = new JMenu();
         jMenuItem1 = new JMenuItem();
         jMenuItem2 = new JMenuItem();
@@ -161,6 +162,7 @@ public class ChatGUI extends JFrame {
         jMenuItem6 = new JMenuItem();
         jMenuItem7 = new JMenuItem();
         jMenuItem8 = new JMenuItem();
+        jMenuItem9 = new JMenuItem();
 
         //set close and title
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -239,6 +241,7 @@ public class ChatGUI extends JFrame {
         //Menu bar
         fileMenu.setText("File");
         editMenu.setText("Edit");
+        historyMenu.setText("History");
         helpMenu.setText("Help");
         jMenuItem1.setText("Settings");
         jMenuItem1.addActionListener(new ActionListener() {
@@ -300,6 +303,12 @@ public class ChatGUI extends JFrame {
                 saveConversation(e);
             }
         });
+        jMenuItem9.setText("Select Room");
+        jMenuItem9.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                saveConversation(e);
+            }
+        });
         fileMenu.add(jMenuItem5);
         fileMenu.addSeparator();
         fileMenu.add(jMenuItem4);
@@ -311,8 +320,10 @@ public class ChatGUI extends JFrame {
         fileMenu.add(jMenuItem1);
         helpMenu.add(jMenuItem6);
         editMenu.add(jMenuItem8);
+        historyMenu.add(jMenuItem9);
         menuBar.add(fileMenu);
         menuBar.add(editMenu);
+        menuBar.add(historyMenu);
         menuBar.add(helpMenu);
         setJMenuBar(menuBar);
 
@@ -401,7 +412,7 @@ public class ChatGUI extends JFrame {
                 int selectedRow = chatWindowsTable.getSelectedRow();
                 String roomName = (String) chatWindowsTableModel.getValueAt(selectedRow, 1);
                 //located room
-                currentChatWindow = chatSession.getChatWindow(roomName);
+                currentChatWindow = chatSession.getActiveChatWindow(roomName);
                 //set number of unread messages in currentChatWindow to 0
                 currentChatWindow.setMessgeCountToZero();
                 chatWindowsTableModel.setValueAt(0,selectedRow,3);
