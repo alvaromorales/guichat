@@ -16,6 +16,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import protocol.GetListOfAvaiableRoomsRequest;
 import protocol.InterfaceAdapter;
 import protocol.Message;
 import protocol.Registration;
@@ -172,7 +173,12 @@ public class ChatSession {
         //create/send login request
         Request loginRequest = new Registration.LoginRequest(gui.username);
         sendRequest(loginRequest);
-    }   
+    } 
+
+    public void sendRequestForAvaibleRooms() {
+        Request request = new GetListOfAvaiableRoomsRequest(username);
+        sendRequest(request);
+    }
 
     public void logout() {
         //create/send logout request
