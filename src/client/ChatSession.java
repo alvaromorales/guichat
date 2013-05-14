@@ -29,7 +29,8 @@ import protocol.SendMessageRequest;
 public class ChatSession {
     PrintWriter output;
     BufferedReader input;
-    Map<String, ChatWindow> chatWindows;
+    Map<String, ChatWindow> activeChatWindows;
+    Map<String, ChatWindow> prevChatWindows;
     List<String> avaibleChatRooms;
     BlockingQueue<Response> responseQueue;
     Thread responseListener;
@@ -48,7 +49,8 @@ public class ChatSession {
             this.input = new BufferedReader(
                     new InputStreamReader(
                         socket.getInputStream()));
-            this.chatWindows = Collections.synchronizedMap(new HashMap<String, ChatWindow>());
+            this.activeChatWindows = Collections.synchronizedMap(new HashMap<String, ChatWindow>());
+            this.prevChatWindows = Collections.synchronizedMap(new HashMap<String, ChatWindow>());
             //create and run the responseHandler thread
             this.responseHandler = new Thread(new ResponseHandler(this));
             this.responseHandler.start();
@@ -61,22 +63,34 @@ public class ChatSession {
     }
 
     public synchronized void addChatWindow(ChatWindow c) {
-        chatWindows.put(c.getName(),c);
+        activeChatWindows.put(c.getName(),c);
+        if (prevChatWindows.containsKey(c.getName())){
+            prevChatWindows.remove(c.getName());
+        }
         //TODO modify GUI as appropriate
     }
 
     public synchronized void removeChatWindow(ChatWindow c) {
-        chatWindows.remove(c.getName());
+        activeChatWindows.remove(c.getName());
+        prevChatWindows.put(c.getName(), c);
         //TODO modify GUI as appropriate
     }
 
-    public Map<String, ChatWindow> getChatWindows() {
-        return chatWindows;
+    public Map<String, ChatWindow> getActiveChatWindows() {
+        return activeChatWindows;
+    }
+    
+    public Map<String, ChatWindow> getPrevChatWindows() {
+        return prevChatWindows;
     }
 
-    public ChatWindow getChatWindow(String name) {
-        return chatWindows.get(name);
+    public ChatWindow getActiveChatWindow(String name) {
+        return activeChatWindows.get(name);
     } 
+    
+    public ChatWindow getPrevChatWindow(String name) {
+        return prevChatWindows.get(name);
+    }
 
     public String getUsername() {
         return username;

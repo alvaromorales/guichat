@@ -70,7 +70,7 @@ public class ResponseHandler implements Runnable {
                 //add the message and render it in the gui if the 
                 //chat window is the current window
                 //otherwise adjust the table on the right of the gui
-                session.getChatWindows().get(response.getRoomName()).addMessage(response.getMessage(),session.gui);
+                session.getActiveChatWindows().get(response.getRoomName()).addMessage(response.getMessage(),session.gui);
             }
             return null;
         }
@@ -83,7 +83,7 @@ public class ResponseHandler implements Runnable {
 
         @Override
         public Void visit(UserJoinOrLeaveRoomResponse response) {
-            ChatWindow c = session.getChatWindows().get(response.getRoomName());
+            ChatWindow c = session.getActiveChatWindows().get(response.getRoomName());
             String username = response.getUsername();
             if (response.isJoining()) { //joining room
                 c.addUser(username, session.gui);
