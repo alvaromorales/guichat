@@ -5,7 +5,7 @@ import server.Visitor;
 /**
  * Represents a GetListOfAvaibleRoomsRequest
  */
-public class GetListOfAvaiableRoomsRequest implements Request {
+public class GetListOfAvailableRoomsRequest implements Request {
     private String username;
 
     /**
@@ -13,7 +13,7 @@ public class GetListOfAvaiableRoomsRequest implements Request {
      * @param username the username of the user of the request/response
      * @param roomName the name of the room
      */
-    public GetListOfAvaiableRoomsRequest(String username) {
+    public GetListOfAvailableRoomsRequest(String username) {
         this.username = username;
     }
 
@@ -52,7 +52,7 @@ public class GetListOfAvaiableRoomsRequest implements Request {
         if (this == obj) return true;
         if (obj == null) return false;
         if (getClass() != obj.getClass()) return false;
-        GetListOfAvaiableRoomsRequest other = (GetListOfAvaiableRoomsRequest) obj;
+        GetListOfAvailableRoomsRequest other = (GetListOfAvailableRoomsRequest) obj;
         if (getUsername() == null) {
             if (other.getUsername() != null)
                 return false;

@@ -12,6 +12,7 @@ import protocol.Request;
 import protocol.RoomRequest.*;
 import protocol.RoomResponse.*;
 import protocol.AvailableChatRoomsResponse;
+import protocol.GetListOfAvailableRoomsRequest;
 import protocol.Response;
 import protocol.SendMessageRequest;
 import protocol.StopServer;
@@ -141,6 +142,15 @@ public class RequestHandler implements Runnable {
                 }
             }
 
+            return null;
+        }
+
+        /**
+         * Sends a list of available rooms
+         */
+        @Override
+        public Void visit(GetListOfAvailableRoomsRequest request) {
+            usersMap.get(request.getUsername()).sendResponse(new AvailableChatRoomsResponse(getAvailableChatRooms()));
             return null;
         }
     }
