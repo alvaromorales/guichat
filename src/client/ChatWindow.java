@@ -23,6 +23,10 @@ public class ChatWindow {
         this.messages = Collections.synchronizedList(new ArrayList<Message>());
     }
 
+    public void setMessgeCountToZero() {
+        unreadCount = 0;
+    }
+
     public synchronized void addMessage(Message m, ChatGUI gui) {
         this.messages.add(m);
         if (this.equals(gui.getCurrentChatWindow())) { //ChatWindow is current

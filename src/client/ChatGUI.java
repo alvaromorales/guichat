@@ -220,7 +220,7 @@ public class ChatGUI extends JFrame {
             private static final long serialVersionUID = 674689143091386263L;
 
             @Override
-            public boolean isCellEditable ( int row, int column ) {
+            public boolean isCellEditable (int row, int column) {
                 return false;
             }
         };
@@ -402,11 +402,16 @@ public class ChatGUI extends JFrame {
                 String roomName = (String) chatWindowsTableModel.getValueAt(selectedRow, 1);
                 //located room
                 currentChatWindow = chatSession.getChatWindow(roomName);
+                //set number of unread messages in currentChatWindow to 0
+                currentChatWindow.setMessgeCountToZero();
+                chatWindowsTableModel.setValueAt(0,selectedRow,3);
                 //refresh chat history window with messages from the selected chat window
                 clearWindow();
                 for (Message m: currentChatWindow.getMessages()) {
                     writeToWindow(m.getUsername() + ":" + m.getMessage());
                 }
+                //set label to the title of the current room
+                messageLabel.setText(currentChatWindow.getName());
             } 
         }
     }
