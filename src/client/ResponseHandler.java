@@ -4,6 +4,7 @@ import java.awt.List;
 
 import protocol.Registration.LoginResponse;
 
+import protocol.AvailableChatRoomsResponse;
 import protocol.Response;
 import protocol.RoomResponse.JoinedRoomResponse;
 import protocol.RoomResponse.LeftRoomResponse;
@@ -100,6 +101,12 @@ public class ResponseHandler implements Runnable {
             } else { //exiting room
                 c.removeUser(username, session.gui);
             }
+            return null;
+        }
+
+        @Override
+        public Void visit(AvailableChatRoomsResponse availableChatRoomsResponse) {
+            // TODO Auto-generated method stub
             return null;
         }
     }

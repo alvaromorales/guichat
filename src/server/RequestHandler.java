@@ -3,6 +3,7 @@ package server;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -10,6 +11,9 @@ import protocol.Registration.*;
 import protocol.Request;
 import protocol.RoomRequest.*;
 import protocol.RoomResponse.*;
+import protocol.AvailableChatRoomsResponse;
+import protocol.GetListOfAvailableRoomsRequest;
+import protocol.Response;
 import protocol.SendMessageRequest;
 import protocol.StopServer;
 import protocol.UserJoinOrLeaveRoomResponse;
@@ -109,6 +113,7 @@ public class RequestHandler implements Runnable {
                     // create a room and add user to it
                     chatRooms.put(request.getRoomName(), new ChatRoom(request.getRoomName(), usersMap));
                     chatRooms.get(request.getRoomName()).addUser(request.getUsername());
+                    broadastResponse(new AvailableChatRoomsResponse(getAvailableChatRooms()));
                 }
 
                 // send confirmation
@@ -131,11 +136,21 @@ public class RequestHandler implements Runnable {
 
                 if (room.isEmpty()) {
                     chatRooms.remove(request.getRoomName());
+                    broadastResponse(new AvailableChatRoomsResponse(getAvailableChatRooms()));
                 } else {
                     room.broadcastResponse(new UserJoinOrLeaveRoomResponse(request.getUsername(), request.getRoomName(), false));
                 }
             }
 
+            return null;
+        }
+
+        /**
+         * Sends a list of available rooms
+         */
+        @Override
+        public Void visit(GetListOfAvailableRoomsRequest request) {
+            usersMap.get(request.getUsername()).sendResponse(new AvailableChatRoomsResponse(getAvailableChatRooms()));
             return null;
         }
     }
@@ -161,6 +176,32 @@ public class RequestHandler implements Runnable {
     public void stop() {
         requestQueue.offer(new StopServer());
     }
+    
+    /**
+     * Gets a list of names of available chat rooms
+     * @return a list of names of available chat rooms
+     */
+    public synchronized List<String> getAvailableChatRooms() {
+        synchronized (chatRooms) {
+            List<String> rooms = new ArrayList<String>();
+            for (ChatRoom room : chatRooms.values()) {
+                rooms.add(room.getName());
+            }
+            
+            return rooms;
+        }
+    }
+    
+    /**
+     * Broadcasts a response to all connected users
+     */
+    public synchronized void broadastResponse(Response response) {
+        synchronized (usersMap) {
+            for (User u: usersMap.values()) {
+                u.sendResponse(response);
+            }
+        }
+    }
 
     /**
      * Runs the request handler
@@ -170,6 +211,7 @@ public class RequestHandler implements Runnable {
         try {
             while (running.get()) {
                 Request request = requestQueue.take();
+                System.out.println("REQUEST: " + request);
                 request.accept(this.visitor);
             }
         } catch (Exception e) {
