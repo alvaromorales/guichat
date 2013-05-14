@@ -74,6 +74,10 @@ public class ChatSession {
         return chatWindows;
     }
 
+    public ChatWindow getChatWindow(String name) {
+        return chatWindows.get(name);
+    } 
+
     public String getUsername() {
         return username;
     }

@@ -116,8 +116,8 @@ public class ChatGUI extends JFrame {
             "1) \"--list_users_in_room\"\n" +
             "2) \"--exit_room\"\n" +
             "3) \"--exit_chat_client\"\n";
-    private JTable chatWindowsTable;
-    private DefaultTableModel chatWindowsTableModel;
+    public JTable chatWindowsTable;
+    public DefaultTableModel chatWindowsTableModel;
     //Server/client connection variables
     private boolean isConnected = false;
     private final String SERVER_NAME = "localhost";
@@ -231,7 +231,7 @@ public class ChatGUI extends JFrame {
                 changeCurrentChatWindow(e);
             }
         });
-
+        //testing
         chatWindowsTableModel.addRow(new String[] {"no","chat1", "5", "0"});
         chatWindowsTableModel.addRow(new String[] {"no","chat2", "5", "0"});
         chatWindowsTableModel.addRow(new String[] {"no","chat3", "5", "0"});
@@ -393,18 +393,26 @@ public class ChatGUI extends JFrame {
         return currentChatWindow;
     }
 
+    public Object getTableModelLock() {
+        return tableModelLock;
+    }
+
     //Listener Methods
 
     private void changeCurrentChatWindow(MouseEvent e) {
-        synchronized(tableModelLock) {
-            //TODO implement everything most everything involved with the
-            //changing the current chat window here
-            //for testing
-            //int selectedRow = chatWindowsTable.getSelectedRow();
-            //String roomName = (String) chatWindowsTableModel.getValueAt(selectedRow, 1);
-            //System.out.print("Selected Row: " + selectedRow + "; ");
-            //System.out.println("Name: " + roomName + ";");
-        }   
+        if (isConnected) {
+            synchronized(tableModelLock) {
+                int selectedRow = chatWindowsTable.getSelectedRow();
+                String roomName = (String) chatWindowsTableModel.getValueAt(selectedRow, 1);
+                //located room
+                currentChatWindow = chatSession.getChatWindow(roomName);
+                //refresh chat history window with messages from the selected chat window
+                clearWindow();
+                for (Message m: currentChatWindow.getMessages()) {
+                    writeToWindow(m.getUsername() + ":" + m.getMessage());
+                }
+            } 
+        }
     }
 
     private void connectToRoom(ActionEvent e) {

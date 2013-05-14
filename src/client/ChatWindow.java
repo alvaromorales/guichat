@@ -29,7 +29,15 @@ public class ChatWindow {
             gui.writeToWindow(m.getUsername() + ":" + m.getMessage());
         } else { //ChatWindow is not open. Modify sidebar
             unreadCount += 1;
-            //TODO
+            //adjust the table to reflect the unread message count
+            synchronized(gui.getTableModelLock()) {
+                //locate the correct row
+                for (int row = 0; row < gui.chatWindowsTableModel.getRowCount(); row++) {
+                    if (((String) gui.chatWindowsTableModel.getValueAt(row, 1)).equals(name)) {
+                        gui.chatWindowsTableModel.setValueAt(unreadCount,row,3);
+                    }
+                }
+            }
         }
     }
 
@@ -38,7 +46,15 @@ public class ChatWindow {
         if (this.equals(gui.getCurrentChatWindow())) { //ChatWindow is current
             gui.writeToWindow("System Message: " + username + " has joined the chat room.");
         } else { //ChatWindow is not open. 
-            //TODO Modify sidebar
+            //adjust the table to reflect the number of users
+            synchronized(gui.getTableModelLock()) {
+                //locate the correct row
+                for (int row = 0; row < gui.chatWindowsTableModel.getRowCount(); row++) {
+                    if (((String) gui.chatWindowsTableModel.getValueAt(row, 1)).equals(name)) {
+                        gui.chatWindowsTableModel.setValueAt(users.size(),row,2);
+                    }
+                }
+            }
         }
     }
 
@@ -48,7 +64,15 @@ public class ChatWindow {
         if (this.equals(gui.getCurrentChatWindow())) { //ChatWindow is current
             gui.writeToWindow("System Message: " + username + " has left the chat room.");
         } else { //ChatWindow is not open. 
-            //TODO Modify sidebar
+            //adjust the table to reflect the number of users
+            synchronized(gui.getTableModelLock()) {
+                //locate the correct row
+                for (int row = 0; row < gui.chatWindowsTableModel.getRowCount(); row++) {
+                    if (((String) gui.chatWindowsTableModel.getValueAt(row, 1)).equals(name)) {
+                        gui.chatWindowsTableModel.setValueAt(users.size(),row,2);
+                    }
+                }
+            }
         }
     }
 
