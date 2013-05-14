@@ -4,6 +4,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.URI;
@@ -124,6 +126,7 @@ public class ChatGUI extends JFrame {
     private ChatSession chatSession = null;
     private ChatWindow currentChatWindow = null;
     public String username;
+    private Object tableModelLock = new Object();
 
 
     /**
@@ -210,9 +213,28 @@ public class ChatGUI extends JFrame {
         //They will also have a number next to the name if there
         //are unread messages
         chatWindowsTableModel = (DefaultTableModel) new DefaultTableModel(new Object[] {"Active","Name","# Users","# Unread"},0);
-        chatWindowsTable = new JTable(chatWindowsTableModel);
+        chatWindowsTable = new JTable(chatWindowsTableModel) {
+            /**
+             * jholliman
+             */
+            private static final long serialVersionUID = 674689143091386263L;
+
+            @Override
+            public boolean isCellEditable ( int row, int column ) {
+                return false;
+            }
+        };
         jScrollPane3.setViewportView(chatWindowsTable);
         jScrollPane3.setSize(30, 10);
+        chatWindowsTable.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                changeCurrentChatWindow(e);
+            }
+        });
+
+        chatWindowsTableModel.addRow(new String[] {"no","chat1", "5", "0"});
+        chatWindowsTableModel.addRow(new String[] {"no","chat2", "5", "0"});
+        chatWindowsTableModel.addRow(new String[] {"no","chat3", "5", "0"});
 
         //Open chat rooms label
         avaiableChatRoomsLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -372,6 +394,18 @@ public class ChatGUI extends JFrame {
     }
 
     //Listener Methods
+
+    private void changeCurrentChatWindow(MouseEvent e) {
+        synchronized(tableModelLock) {
+            //TODO implement everything most everything involved with the
+            //changing the current chat window here
+            //for testing
+            //int selectedRow = chatWindowsTable.getSelectedRow();
+            //String roomName = (String) chatWindowsTableModel.getValueAt(selectedRow, 1);
+            //System.out.print("Selected Row: " + selectedRow + "; ");
+            //System.out.println("Name: " + roomName + ";");
+        }   
+    }
 
     private void connectToRoom(ActionEvent e) {
         if (isConnected) {
