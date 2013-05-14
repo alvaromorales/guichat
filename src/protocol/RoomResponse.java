@@ -1,5 +1,7 @@
 package protocol;
 
+import java.util.List;
+
 import client.ClientVisitor;
 
 /**
@@ -7,7 +9,7 @@ import client.ClientVisitor;
  */
 public class RoomResponse {
     private String roomName;
-    
+
     /**
      * Creates a new RoomResponse object
      * @param roomName the name of the room
@@ -31,19 +33,21 @@ public class RoomResponse {
     public String toString() {
         return "roomName=" + roomName;
     }
-    
+
     public static class JoinedRoomResponse extends RoomResponse implements Response {
+        private List<String> usersInRoom;
 
         /**
          * Creates a new JoinedRoomResponse object
          * @param roomName the name of the room
          */
-        public JoinedRoomResponse(String roomName) {
+        public JoinedRoomResponse(String roomName, List<String> usersInRoom) {
             super(roomName);
+            this.usersInRoom = usersInRoom;
         }
-        
+
         /**
-         * Checks if a JoinedRoomResponse object is equal to another object
+         * Checks that a JoinedRoomResponse is equal to another object
          * @param obj the object to compare to
          * @return true if equal, else false
          */
@@ -56,12 +60,27 @@ public class RoomResponse {
             if (getClass() != obj.getClass())
                 return false;
             JoinedRoomResponse other = (JoinedRoomResponse) obj;
+            if (usersInRoom == null) {
+                if (other.usersInRoom != null)
+                    return false;
+            } else if (!usersInRoom.equals(other.usersInRoom))
+                return false;
+            
             if (getRoomName() == null) {
                 if (other.getRoomName() != null)
                     return false;
             } else if (!getRoomName().equals(other.getRoomName()))
                 return false;
+            
             return true;
+        }
+
+        /**
+         * Gets the list of users in the room
+         * @return the list of users in the room
+         */
+        public List<String> getUsersInRoom() {
+            return usersInRoom;
         }
 
         /**
@@ -70,16 +89,16 @@ public class RoomResponse {
          */
         @Override
         public String toString() {
-            return "JoinedRoomResponse [" + super.toString() + "]";
+            return "JoinedRoomResponse [" + super.toString() + ", users=" + usersInRoom.toString() + "]";
         }
 
         @Override
         public <E> E accept(ClientVisitor<E> v) {
             return v.visit(this);
         }
-        
+
     }
-    
+
     public static class LeftRoomResponse extends RoomResponse implements Response {
 
         /**
@@ -89,7 +108,7 @@ public class RoomResponse {
         public LeftRoomResponse(String roomName) {
             super(roomName);
         }
-        
+
         /**
          * Checks if a LeftRoomResponse object is equal to another object
          * @param obj the object to compare to
@@ -111,7 +130,7 @@ public class RoomResponse {
                 return false;
             return true;
         }
-        
+
         /**
          * Gets the String representation of a LeftRoomResponse object
          * @return the String representation of a LeftRoomResponse object
@@ -126,6 +145,6 @@ public class RoomResponse {
             return v.visit(this);
         }
     }
-    
-       
+
+
 }

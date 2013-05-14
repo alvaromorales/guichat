@@ -42,6 +42,21 @@ public class ChatRoom {
     }
     
     /**
+     * Broadcasts a response to every user in the chat room, except for the specified user
+     * @param response the response to broadcast
+     * @param username the username of the user who should NOT receive this response
+     */
+    public synchronized void broadcastResponse(Response response, String username) {
+        synchronized (usersInRoom) {
+            for (String u: usersInRoom) {
+                if (!u.equals(username)){
+                    usersMap.get(u).sendResponse(response);
+                }
+            }
+        }
+    }
+    
+    /**
      * Adds a user to the room
      * @param username the user to add to the room
      */

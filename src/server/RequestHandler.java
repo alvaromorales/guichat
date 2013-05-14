@@ -12,6 +12,7 @@ import protocol.RoomRequest.*;
 import protocol.RoomResponse.*;
 import protocol.SendMessageRequest;
 import protocol.StopServer;
+import protocol.UserJoinOrLeaveRoomResponse;
 import protocol.UsersInRoomResponse;
 
 /**
@@ -100,18 +101,23 @@ public class RequestHandler implements Runnable {
          */
         @Override
         public synchronized Void visit(JoinOrCreateRoomRequest request) {
-            if (chatRooms.get(request.getRoomName()) != null) {
-                // add user to room
-                chatRooms.get(request.getRoomName()).addUser(request.getUsername());
-            } else {
-                // create a room and add user to it
-                chatRooms.put(request.getRoomName(), new ChatRoom(request.getRoomName(), usersMap));
-                chatRooms.get(request.getRoomName()).addUser(request.getUsername());
-            }
+            synchronized (chatRooms) {
+                if (chatRooms.get(request.getRoomName()) != null) {
+                    // add user to room
+                    chatRooms.get(request.getRoomName()).addUser(request.getUsername());
+                } else {
+                    // create a room and add user to it
+                    chatRooms.put(request.getRoomName(), new ChatRoom(request.getRoomName(), usersMap));
+                    chatRooms.get(request.getRoomName()).addUser(request.getUsername());
+                }
 
-            // send confirmation
-            usersMap.get(request.getUsername()).sendResponse(new JoinedRoomResponse(request.getRoomName()));
-            return null;
+                // send confirmation
+                usersMap.get(request.getUsername()).sendResponse(new JoinedRoomResponse(request.getRoomName(), chatRooms.get(request.getRoomName()).getUsers()));
+                
+                // notify users that the user joined
+                chatRooms.get(request.getRoomName()).broadcastResponse(new UserJoinOrLeaveRoomResponse(request.getUsername(),request.getRoomName(),true), request.getUsername());
+                return null;
+            }
         }
 
         /**
@@ -119,17 +125,17 @@ public class RequestHandler implements Runnable {
          */
         @Override
         public synchronized Void visit(LeaveRoomRequest request) {
-            ChatRoom room = chatRooms.get(request.getRoomName());
-            room.removeUser(request.getUsername());
-
             synchronized (chatRooms) {
+                ChatRoom room = chatRooms.get(request.getRoomName());
+                room.removeUser(request.getUsername());
+
                 if (room.isEmpty()) {
                     chatRooms.remove(request.getRoomName());
+                } else {
+                    room.broadcastResponse(new UserJoinOrLeaveRoomResponse(request.getUsername(), request.getRoomName(), false));
                 }
             }
 
-            // send confirmation
-            usersMap.get(request.getUsername()).sendResponse(new LeftRoomResponse(request.getRoomName()));
             return null;
         }
     }
