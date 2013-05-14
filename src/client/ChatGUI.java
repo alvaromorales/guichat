@@ -231,10 +231,6 @@ public class ChatGUI extends JFrame {
                 changeCurrentChatWindow(e);
             }
         });
-        //testing
-        chatWindowsTableModel.addRow(new String[] {"no","chat1", "5", "0"});
-        chatWindowsTableModel.addRow(new String[] {"no","chat2", "5", "0"});
-        chatWindowsTableModel.addRow(new String[] {"no","chat3", "5", "0"});
 
         //Open chat rooms label
         avaiableChatRoomsLabel.setHorizontalAlignment(SwingConstants.CENTER);
