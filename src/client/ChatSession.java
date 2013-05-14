@@ -96,6 +96,8 @@ public class ChatSession {
                                                                c.getUnreadCount() + ""});
             }
         }
+        System.out.println(c.getName());
+        gui.reload(c.getName());
     }
 
     public synchronized void removeChatWindow(ChatWindow c) {
