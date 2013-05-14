@@ -431,7 +431,7 @@ public class ChatGUI extends JFrame {
                 //refresh chat history window with messages from the selected chat window
                 clearWindow();
                 for (Message m: currentChatWindow.getMessages()) {
-                    writeToWindow(m.getUsername() + ":" + m.getMessage());
+                    writeToWindow(m.getUsername() + ":" + m.getMessage()+"\n");
                 }
                 //set label to the title of the current room
                 messageLabel.setText(currentChatWindow.getName());
@@ -463,7 +463,7 @@ public class ChatGUI extends JFrame {
                     JOptionPane.YES_NO_OPTION);
             if (n == 0) { //yes
                 chatSession.closeChatWindow(currentChatWindow);
-                //the current chat window needs to be set to something else
+                clearWindow();
             }
         }
     }

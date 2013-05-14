@@ -190,6 +190,7 @@ public class ChatSession {
         //TODO modify the gui
         Request leaveRoomRequest = new RoomRequest.LeaveRoomRequest(gui.username, c.getName());
         sendRequest(leaveRoomRequest);
+        removeChatWindow(c);
     }
 
     public void saveConversation(ChatWindow cur) {
