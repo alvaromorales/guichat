@@ -40,6 +40,7 @@ public class ResponseHandler implements Runnable {
             session.gui.writeToWindow("System Message: You have been successfully " +
                                       "logged in with the username " + response.getUsername() + "\n");
             session.setUsername(response.getUsername());
+            session.sendRequestForAvaibleRooms();
             return null;
         }
 
