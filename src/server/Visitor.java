@@ -1,6 +1,7 @@
 package server;
 
 import protocol.Registration.*;
+import protocol.GetListOfAvaiableRoomsRequest;
 import protocol.RoomRequest.GetUsersInRoomRequest;
 import protocol.RoomRequest.JoinOrCreateRoomRequest;
 import protocol.RoomRequest.LeaveRoomRequest;
@@ -14,4 +15,5 @@ public interface Visitor<E> {
     public E visit(LeaveRoomRequest request);
     public E visit(GetUsersInRoomRequest request);
     public E visit(SendMessageRequest request);
+    public E visit(GetListOfAvaiableRoomsRequest getListOfAvaiableRoomsRequest);
 }
