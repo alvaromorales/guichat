@@ -589,11 +589,19 @@ public class ChatGUI extends JFrame {
     }
 
     private void settings(ActionEvent e) {
-        if (isConnected) {
-            //TODO
-        } else {
-            //TODO
+        String[] possibilities = new String[] {"10","12","14","16","18","20"};
+        String fontSize = (String)JOptionPane.showInputDialog(
+                        this,
+                        "Select prefered font size?",
+                        "Settings",
+                        JOptionPane.PLAIN_MESSAGE,
+                        null,
+                        possibilities,
+                        chatTextArea.getFont().getSize()+"");
+        if (fontSize != null) {
+            chatTextArea.setFont(new Font("Times New Roman", 0, Integer.parseInt(fontSize)));
         }
+        //TODO make more in depth settings if there's time
     }
 
     private void saveConversation(ActionEvent e) {
