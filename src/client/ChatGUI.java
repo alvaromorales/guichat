@@ -142,6 +142,9 @@ public class ChatGUI extends JFrame {
         writeToWindow(startupMessage);
     }
 
+    /**
+     * Initialize the gui components
+     */
     private void initComponents() {
         //init items
         jScrollPane1 = new JScrollPane();
@@ -382,11 +385,23 @@ public class ChatGUI extends JFrame {
 
     //Helpers
 
+    /**
+     * This method writes text the chatTextArea
+     * and then scrolls to the bottom.
+     *
+     * Note: This is the only method that can write to the chatTextArea
+     * @param text: a string with the message to write to the chatTextArea
+     */
     public synchronized void writeToWindow(String text) {
         chatTextArea.append(text);
         scrollToBottomOfChatWindow();
     }
     
+    /**
+     * This method writes the chat history of a window to a dialog box
+     *
+     * @param message: list of messages to write to the dialog
+     */
     public synchronized void writeToHistoryWindow(List<Message> messages) {
        JTextArea textArea = new JTextArea(100, 250);
        for (int i = 0; i < messages.size(); i++){
@@ -404,36 +419,69 @@ public class ChatGUI extends JFrame {
 
     }
 
+    /**
+     * Clears the chatTextArea of text
+     */
     public void clearWindow() {
         chatTextArea.setText("");
     }
 
+    /**
+     * Scrolls to the bottom of the chatTextArea
+     */
     private void scrollToBottomOfChatWindow() {
         //scroll to the bottom of the scroll pane
         JScrollBar vertical = jScrollPane2.getVerticalScrollBar();
         vertical.setValue(vertical.getMaximum());
     }
 
-    public void setIsConnected(boolean b) {
-        isConnected = b;
+    /**
+     * Sets the isConnected boolean
+     *
+     * @param isConnected: boolean representing connection status
+     */
+    public void setIsConnected(boolean isConnected) {
+        this.isConnected = isConnected;
     }
 
+    /**
+     * Getter method for currentChatWindow
+     *
+     * @return currentChatWindow: the current chat conversation
+     */
     public synchronized ChatWindow getCurrentChatWindow() {
         return currentChatWindow;
     }
 
+    /**
+     * Getter method for tableModelLock
+     *
+     * @return tableModelLock: lock to modify chatWindowsTableModel
+     */
     public Object getTableModelLock() {
         return tableModelLock;
     }
 
     //Listener Methods
 
+    /**
+     * Based on the users connection status this method is 
+     * responsible for switching the currentChatWindow.
+     *
+     * Noting happens if the user is not connected.
+     * If the window selected was previously active at one 
+     * point old message exchange while user was in the room
+     * will be loaded.
+     *
+     * @param e: the MouseEvent registered on the chatWindowsTableModel
+     */
     private void changeCurrentChatWindow(MouseEvent e) {
         if (isConnected) {
             synchronized(tableModelLock) {
+                //get information on which row was clicked
                 int selectedRow = chatWindowsTable.getSelectedRow();
                 String roomName = (String) chatWindowsTableModel.getValueAt(selectedRow, 1);
-                //located room
+                //locate room
                 Map<String, ChatWindow>  chatWindows = chatSession.getActiveChatWindows();
                 Map<String, ChatWindow>  prevChatWindows = chatSession.getPrevChatWindows();
                 if (chatWindows.containsKey(roomName)) {
@@ -457,6 +505,13 @@ public class ChatGUI extends JFrame {
         }
     }
 
+    /**
+     * Resets the chatTextArea to contain message for the 
+     * chatWindow corresponding to the name passed into this
+     * method.
+     *
+     * @param name: name of the ChatWindow to load into the currentChatWindow
+     */
     public void reload(String name) {
         synchronized(tableModelLock) {
             //locate the correct row
@@ -481,6 +536,14 @@ public class ChatGUI extends JFrame {
         }
     }
 
+    /**
+     * Based on the users connection status this method creates
+     * a dialog with rooms for the user to join.
+     *
+     * Note: nothing will happen if the user is not logged in.
+     *
+     * @param e: the ActionEvent fired when user attempts to connect to a room
+     */
     private void connectToRoom(ActionEvent e) {
         if (isConnected) {
             Object[] possibilities = chatSession.getAvailableChatRooms(); //get the list of rooms
@@ -504,6 +567,18 @@ public class ChatGUI extends JFrame {
         }
     }
 
+    /**
+     * Based on the users connection status this method creates
+     * a dialog asking the user if the would like to exit their
+     * current room. If they respond in the affirmative the room 
+     * is exited and the gui is adjusted as appropriate.
+     *
+     * Note: nothing will happen if the user is not logged in.
+     * or if the currentChatWindow is null (i.e. when there is 
+     * no room to leave).
+     *
+     * @param e: the ActionEvent fired when user attempts to disconnect from a room
+     */
     private void disconnectFromRoom(ActionEvent e) {
         if (isConnected && currentChatWindow != null) {
             int n = JOptionPane.showConfirmDialog(
@@ -522,6 +597,16 @@ public class ChatGUI extends JFrame {
         }
     }
 
+    /**
+     * Based on the users connection status this method ask the
+     * user for a username and attempts to connect them to the 
+     * chat server. If there username is free it will succeed.
+     *
+     * Note: if the user is already logged a System Message
+     * alerting them they are already logged will appear.
+     *
+     * @param e: the ActionEvent fired when user attempts to connect to the server
+     */
     private void connectToServer(ActionEvent e) {
         if (isConnected) {
             writeToWindow("System Message: You are already connected. Logout and log back in if you are looking to change username.");
@@ -555,6 +640,17 @@ public class ChatGUI extends JFrame {
         }  
     }
 
+    /**
+     * Based on the users connection status this method attempts
+     * to disconnect them from the server by creating a dialog
+     * asking them whether or not they are sure they would like 
+     * to disconnect. If they answer yes the socket is closed and
+     * the specific variables (e.g. chatSession) are set to null.
+     *
+     * Note: nothing will happen if the user is not logged in.
+     *
+     * @param e: the ActionEvent fired when user attempts to disconnect from the server
+     */
     private void disconnectFromServer(ActionEvent e) {
         if (isConnected) {
             int n = JOptionPane.showConfirmDialog(
@@ -578,6 +674,16 @@ public class ChatGUI extends JFrame {
         }
     }
 
+    /**
+     * Based on the users connection status this method creates
+     * a dialog prompting the user for what they would like to 
+     * name there room. If the room name doesn't exist, the request
+     * will go through.
+     *
+     * Note: nothing will happen if the user is not logged in.
+     *
+     * @param e: the ActionEvent fired when user attempts to create a room.
+     */
     private void createRoom(ActionEvent e) {
         if (isConnected) {
             String name = (String)JOptionPane.showInputDialog(
@@ -595,6 +701,16 @@ public class ChatGUI extends JFrame {
         }
     }
 
+    /**
+     * This method creates a dialog presenting the user with 
+     * different settings. Currently, they only have the option
+     * to adjust the font size. But given more time, more settings
+     * could be added.
+     *
+     * Note: nothing will happen if the user is not logged in.
+     *
+     * @param e: the ActionEvent fired when user attempts to access settings.
+     */
     private void settings(ActionEvent e) {
         String[] possibilities = new String[] {"10","12","14","16","18","20"};
         String fontSize = (String)JOptionPane.showInputDialog(
@@ -611,27 +727,68 @@ public class ChatGUI extends JFrame {
         //TODO make more in depth settings if there's time
     }
 
+    /**
+     * Based on the users connection status this method saves
+     * the current conversation to a text file. Currently the file
+     * is saved at the root of the project directory.
+     *
+     * Note: nothing will happen if the user is not logged in or
+     * if the currentChatWindow is null.
+     *
+     * @param e: the ActionEvent fired when user attempts to save a conversation.
+     */
     private void saveConversation(ActionEvent e) {
         if (isConnected && currentChatWindow != null) {
             chatSession.saveConversation(currentChatWindow);
         }
     }
     
+    /**
+     * Based on the users connection status this method creates
+     * a dialog prompting the user for what room history they
+     * would like to view. Only works if the user has available
+     * chat rooms.
+     *
+     * Note: nothing will happen if the user is not logged in.
+     *
+     * @param e: the ActionEvent fired when user attempts to select history.
+     */
     private void selectHistory(ActionEvent e) {
-        if (isConnected && currentChatWindow != null) {
+        if (isConnected) {
             Object[] possibilities = chatSession.getAvailableChatRooms(); //get the list of rooms
-            String roomName = (String)JOptionPane.showInputDialog(
-                    this,
-                    "What room history would you like to view?",
-                    "Select Room",
-                    JOptionPane.PLAIN_MESSAGE,
-                    null,
-                    possibilities,
-                    possibilities[0]);
-            chatSession.viewHistory(roomName);
+            if (possibilities != null) {
+                 String roomName = (String)JOptionPane.showInputDialog(
+                        this,
+                        "What room history would you like to view?",
+                        "Select Room",
+                        JOptionPane.PLAIN_MESSAGE,
+                        null,
+                        possibilities,
+                        possibilities[0]);
+                if (roomName != null) {
+                    chatSession.viewHistory(roomName);
+                } 
+            }  
         }
     }
 
+    /**
+     * Based on the users connection status this method attempts
+     * to send the submitted message to all other users in the 
+     * chat room. This method also handles all special commands 
+     * the user could give.
+     *
+     * Special commands:
+     *  --help: prints a list of special commands to the screen
+     *  --list_users_in_room: prints a list of users in the room to the screen
+     *  --exit_room: exits the current room
+     *  --talk_dirty_to_me: ;)
+     *
+     * Note: a message will not be sent if the user is not logged in
+     * or if the currentChatWindow is null.
+     *
+     * @param e: the ActionEvent fired when user attempts to send a message.
+     */
     private void sendButtonHandler(ActionEvent e) {
         String textEntered = inputTextArea.getText();
         if (textEntered.equals("--help")) {
@@ -639,8 +796,7 @@ public class ChatGUI extends JFrame {
         } else if (textEntered.equals("--list_users_in_room") && isConnected && currentChatWindow != null) {
             chatSession.getUsersInChatWindow(currentChatWindow);
         } else if (textEntered.equals("--exit_room") && isConnected && currentChatWindow != null) {
-            chatSession.closeChatWindow(currentChatWindow);
-            //TODO the current chat window needs to be set to something else
+            disconnectFromRoom(e);
         } else if (textEntered.equals("--exit_chat_client") && isConnected) {
             disconnectFromServer(e);
             System.exit(0);
