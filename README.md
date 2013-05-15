@@ -6,24 +6,43 @@ A simple chat client and server.
 About
 -----
 
-Talk about chat client.
+This is a simple chat client similar to IRC (Internet Relay Chat). Users have the ability to join and create rooms.
 
 Installation
 -----------
 
-Talk about installation.
+To install and run do the following:
+    
+    * Clone the repository
+    * Run main.Server.main() with no command-line arguments to start and instance of the server. Note: As currently configured, the program will run a server on localhost:4444. So make sure nothing else is running on that port to avoid errors.
+    * Running main.Client.main() with no command-line arguments to start the GUI
+    * Repeat the previous step until you have the desired number of clients
+    * Enjoy playing around with this simple chat interface
 
+To run this code for people on separate machines you will need to modify the server name from localhost to what is appropriate.
 
 Usage
 -----
 
-Talk about usage.
+This project is intended to demonstrate a few of the basics of software design.
 
 Concurrency
 ----------
 
-Talk about concurrency.
+Server Side
 
+We will use a LinkedBlockingQueue implementation for the request blocking queue. This implementation is thread­safe, and allows multiple Users to put Requests onto it without running into race conditions, messing up the order of requests or overwriting requests. These methods will be atomic.
+The request handler class will contain an overloaded handleRequest method (one for each type of requests, e.g. Login, SimpleMessage,etc). Each of these methods will be synchronized. The running RequestHandler thread will take from the queue, and run the corresponding handleRequest method. Because we are using a data structure that is thread­safe, and building a thread­safe RequestHandler class that contains synchronized, atomic methods, our server design is thread­safe.
+
+Client Side
+
+The client concurrency strategy is similar to that of the server. When the client connects to the server two things are created: a ChatSession, responsible for keeping track of the ChatWindows the client has open and maintaining a response blocking queue, and a ResponseHandler, responsible for handling the Response objects. 
+
+As with the RequestHandler on the server side, the ResponseHandler will contain overloaded handleResponse methods. Each of these methods will be synchronized. The ResponseHandler thread takes Responses from the blocking queue in the ChatSession and runs the corresponding handleResponse method.
+
+Most of the Response objects will require that we mutate the ArrayList of messages in a specific ChatWindow and write to the corresponding JTextArea in the GUI. This is all handled by synchronized methods in specific ChatWindow class. With the exception of System Messages and help message pre connection, all writing to the main chat window will be done by active ChatWindow or the ChatSession (in the case of adding new ChatRooms to the Chat Rooms list).
+
+When the user elects to terminate a ChatWindow, we will join all of the threads in the ChatSession blocking queue to ensure that none of those threads can modify the specified ChatWindow after it is terminated. The same is done when the entire ChatSession is terminated.
 
 Testing
 -------
