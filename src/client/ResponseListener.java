@@ -35,7 +35,7 @@ public class ResponseListener implements Runnable {
                 session.responseQueue.put(r);
             }            
         } catch (IOException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         } catch (InterruptedException e) {
             e.printStackTrace();
         } 

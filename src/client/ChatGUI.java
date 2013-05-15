@@ -539,7 +539,7 @@ public class ChatGUI extends JFrame {
                 this.username = username;
                 try {
                     //Attempt to connect to the chat server
-                    Socket socket = new Socket(SERVER_NAME, SERVER_PORT);
+                    this.socket = new Socket(SERVER_NAME, SERVER_PORT);
                     //Alert of success for testing purposes
                     System.out.println("Connected to chat server at " + SERVER_NAME + ":" + SERVER_PORT + ".");
                     //create the chat session
@@ -558,7 +558,7 @@ public class ChatGUI extends JFrame {
     }
 
     private void disconnectFromServer(ActionEvent e) {
-        if (isConnected && currentChatWindow != null) {
+        if (isConnected) {
             int n = JOptionPane.showConfirmDialog(
                     this,
                     "Are you sure that you would like to disconnect?\nAll chats will be closed and the associated histories will be deleted.",
@@ -574,7 +574,7 @@ public class ChatGUI extends JFrame {
                     clearWindow();
                     writeToWindow("You have been successfully disconnected from the server.\n");
                 } catch (IOException e1) {
-                    e1.printStackTrace();
+                    //System.out.println("User was disconnected");
                 }
             }
         }
