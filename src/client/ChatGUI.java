@@ -499,7 +499,9 @@ public class ChatGUI extends JFrame {
                         null,
                         possibilities,
                         possibilities[0]);
-                chatSession.joinChatWindow(roomName);
+                if (roomName != null) {
+                    chatSession.joinChatWindow(roomName);
+                } 
             }
         }
     }
