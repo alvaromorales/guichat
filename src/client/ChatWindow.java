@@ -68,7 +68,6 @@ public class ChatWindow {
 
     public synchronized void removeUser(String username, ChatGUI gui) {
         this.users.remove(username);
-        this.users.add(username);
         if (this.equals(gui.getCurrentChatWindow())) { //ChatWindow is current
             gui.writeToWindow("System Message: " + username + " has left the chat room." + "\n");
         } else { //ChatWindow is not open. 

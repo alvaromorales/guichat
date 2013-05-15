@@ -101,6 +101,7 @@ public class ChatSession {
     }
 
     public synchronized void removeChatWindow(ChatWindow c) {
+        c.removeUser(username, this.gui);
         prevChatWindows.put(c.getName(), activeChatWindows.remove(c.getName()));
         //adjust active indictor
         synchronized(gui.getTableModelLock()) {
@@ -189,7 +190,6 @@ public class ChatSession {
     }
 
     public void closeChatWindow(ChatWindow c) {
-        //TODO modify the gui
         Request leaveRoomRequest = new RoomRequest.LeaveRoomRequest(gui.username, c.getName());
         sendRequest(leaveRoomRequest);
         removeChatWindow(c);

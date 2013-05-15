@@ -295,6 +295,8 @@ public class ChatGUI extends JFrame {
             }
         });
         jMenuItem7.setText("Leave Current Room");
+        jMenuItem7.setMnemonic(KeyEvent.VK_E); //example of mnemonic
+        jMenuItem7.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())); //example of accelerator
         jMenuItem7.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 disconnectFromRoom(e);
@@ -579,8 +581,10 @@ public class ChatGUI extends JFrame {
                     null,
                     null,
                     "Ex. John's room");
-            //attempt to create the chatWindow
-            chatSession.createChatWindow(name);
+            if (name != null) {
+                //attempt to create the chatWindow
+                chatSession.createChatWindow(name);
+            } 
         }
     }
 
