@@ -439,7 +439,6 @@ public class ChatGUI extends JFrame {
                 if (chatWindows.containsKey(roomName)) {
                     currentChatWindow = chatWindows.get(roomName);
                     //set number of unread messages in currentChatWindow to 0
-                    System.out.println("currentChatWindow :" + currentChatWindow);
                     currentChatWindow.setMessageCountToZero();
                     chatWindowsTableModel.setValueAt(0,selectedRow,3);
                     //refresh chat history window with messages from the selected chat window
@@ -465,7 +464,6 @@ public class ChatGUI extends JFrame {
                 if (((String) chatWindowsTableModel.getValueAt(row, 1)).equals(name)) {
                     currentChatWindow = chatSession.getActiveChatWindow(name);
                     //set number of unread messages in currentChatWindow to 0
-                    System.out.println("currentChatWindow :" + currentChatWindow);
                     currentChatWindow.setMessageCountToZero();
                     chatWindowsTableModel.setValueAt(0,row,3);
                     //refresh chat history window with messages from the selected chat window
@@ -542,8 +540,6 @@ public class ChatGUI extends JFrame {
                 try {
                     //Attempt to connect to the chat server
                     this.socket = new Socket(SERVER_NAME, SERVER_PORT);
-                    //Alert of success for testing purposes
-                    System.out.println("Connected to chat server at " + SERVER_NAME + ":" + SERVER_PORT + ".");
                     //create the chat session
                     chatSession = new ChatSession(socket, this);
                     //send login request

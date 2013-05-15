@@ -96,7 +96,6 @@ public class ChatSession {
                                                                c.getUnreadCount() + ""});
             }
         }
-        System.out.println(c.getName());
         gui.reload(c.getName());
     }
 
@@ -193,7 +192,6 @@ public class ChatSession {
         Request leaveRoomRequest = new RoomRequest.LeaveRoomRequest(gui.username, c.getName());
         sendRequest(leaveRoomRequest);
         removeChatWindow(c);
-        System.out.println("Cur win: " + gui.currentChatWindow);
     }
 
     public void saveConversation(ChatWindow cur) {
