@@ -168,9 +168,9 @@ public class ChatSession {
         //possible concurrency issues here
         //change when you get a chance
         List<String> users = cur.getUsers();
-        gui.writeToWindow("There are " + users.size() + "users in the room.");
+        gui.writeToWindow("There are " + users.size() + " users in the room.\n");
         for(String user: users) {
-            gui.writeToWindow(user);
+            gui.writeToWindow(user+"\n");
         }
     }
     
