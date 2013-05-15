@@ -9,6 +9,9 @@ import protocol.ServerErrorResponse;
 import protocol.UserJoinOrLeaveRoomResponse;
 import protocol.UsersInRoomResponse;
 
+/**
+ * Represents a ClientVisitor interface
+ */
 public interface ClientVisitor<E> {
     public E visit(LoginResponse response);
     public E visit(JoinedRoomResponse response);

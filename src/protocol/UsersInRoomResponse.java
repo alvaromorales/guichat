@@ -37,6 +37,9 @@ public class UsersInRoomResponse implements Response {
         return users;
     }
 
+    /**
+     * Accepts a ClientVisitor
+     */
     @Override
     public <E> E accept(ClientVisitor<E> v) {
         return v.visit(this);

@@ -1,7 +1,6 @@
 package client;
 
 import protocol.Registration.LoginResponse;
-
 import protocol.AvailableRoomsResponse;
 import protocol.Response;
 import protocol.RoomResponse.JoinedRoomResponse;
@@ -13,13 +12,16 @@ import protocol.UserJoinOrLeaveRoomResponse;
 import protocol.UsersInRoomResponse;
 
 /**
- * Represents a RequestHandler thread
+ * Represents a ResponseHandler thread
  */
 public class ResponseHandler implements Runnable {
     
     private ChatSession session;
     private ResponseHandlerVisitor visitor;
 
+    /**
+     * Represents a ClientVisitor
+     */
     class ResponseHandlerVisitor implements ClientVisitor<Void> {
         /**
          * Creates a new ResponseHandlerVisitor object
@@ -28,7 +30,7 @@ public class ResponseHandler implements Runnable {
         }
 
         /**
-         * Sends Message to other users in room.
+         * Alert user of successful login
          */
         @Override
         public synchronized Void visit(LoginResponse response) {
@@ -43,6 +45,9 @@ public class ResponseHandler implements Runnable {
             return null;
         }
 
+        /**
+         * Alert user that they have successfully joined a room
+         */
         @Override
         public Void visit(JoinedRoomResponse response) {
             //create chat window
@@ -53,12 +58,21 @@ public class ResponseHandler implements Runnable {
             return null;
         }
 
+        /**
+         * Used to alert user that they have successfully exited a room
+         * Didn't end up needing this
+         */
         @Override
         public Void visit(LeftRoomResponse response) {
             //TODO
             return null;
         }
 
+        /**
+         * Server error response.
+         * Can result from unsuccessful login
+         * Or unauthorized access attempt
+         */
         @Override
         public Void visit(ServerErrorResponse response) {
             if (response.getType().equals(Type.LOGIN_TAKEN)) {
@@ -70,6 +84,9 @@ public class ResponseHandler implements Runnable {
             return null;
         }
 
+        /**
+         * Alert user of new message
+         */
         @Override
         public Void visit(SendMessageRequest response) {
             if (!response.getUsername().equals(session.getUsername())) { //ensure the message wasn't sent by you
@@ -81,12 +98,19 @@ public class ResponseHandler implements Runnable {
             return null;
         }
 
+        /**
+         * Alert user of users in a room.
+         * Didn't end up using this
+         */
         @Override
         public Void visit(UsersInRoomResponse response) {
             // TODO Auto-generated method stub
             return null;
         }
         
+        /**
+         * Alert user that another user has joined or left a room.
+         */
         @Override
         public Void visit(UserJoinOrLeaveRoomResponse response) {
             ChatWindow c = session.getActiveChatWindows().get(response.getRoomName());
@@ -107,9 +131,8 @@ public class ResponseHandler implements Runnable {
     }
     
     /**
-     * Creates a new RequestHandler object
-     * @param requestQueue the blocking queue of requests
-     * @param users the map of users connected to the server
+     * Creates a new ResponseHandler object
+     * @param session the user is part of
      */
     public ResponseHandler(ChatSession session) {
         this.session = session;
@@ -117,12 +140,8 @@ public class ResponseHandler implements Runnable {
     }
     
     /**
-     * Stops the response handler
+     * Processes one Response at a time from the blocking queue
      */
-    public void stop() {
-        //TODO
-    }
-    
     @Override
     public void run() {
         try {
