@@ -475,6 +475,8 @@ public class ChatGUI extends JFrame {
                     }
                     //set label to the title of the current room
                     messageLabel.setText(currentChatWindow.getName());
+                    //alert user of how to exit
+                    writeToWindow("System Message: You are connected to " + currentChatWindow.getName() + ". Press ctrl-e (or command-e on mac) to exit.\n");
                     break;
                 }
             }
