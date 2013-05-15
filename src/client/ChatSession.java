@@ -193,6 +193,7 @@ public class ChatSession {
         Request leaveRoomRequest = new RoomRequest.LeaveRoomRequest(gui.username, c.getName());
         sendRequest(leaveRoomRequest);
         removeChatWindow(c);
+        System.out.println("Cur win: " + gui.currentChatWindow);
     }
 
     public void saveConversation(ChatWindow cur) {
