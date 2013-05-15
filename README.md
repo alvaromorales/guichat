@@ -13,11 +13,11 @@ Installation
 
 To install and run do the following:
     
-    * Clone the repository
-    * Run main.Server.main() with no command-line arguments to start and instance of the server. Note: As currently configured, the program will run a server on localhost:4444. So make sure nothing else is running on that port to avoid errors.
-    * Running main.Client.main() with no command-line arguments to start the GUI
-    * Repeat the previous step until you have the desired number of clients
-    * Enjoy playing around with this simple chat interface
+* Clone the repository
+* Run main.Server.main() with no command-line arguments to start an instance of the server. Note: As currently configured, the program will run a server on localhost:4444. So make sure nothing else is running on that port to avoid errors.
+* Running main.Client.main() with no command-line arguments to start the GUI
+* Repeat the previous step until you have the desired number of clients
+* Enjoy playing around with this simple chat interface
 
 To run this code for people on separate machines you will need to modify the server name from localhost to what is appropriate.
 
