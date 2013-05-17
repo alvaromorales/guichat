@@ -36,6 +36,9 @@ public class RequestTester implements Runnable {
     private int expectedResponses;
     private String username;
 
+    /**
+     * Class to send requests
+     */
     class RequestSender implements Runnable {
         DelayQueue<DelayedRequest> requestQueue;
 

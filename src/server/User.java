@@ -72,7 +72,6 @@ public class User implements Runnable {
                             Response loginSuccessful = new LoginResponse(loginRequest.getUsername());
                             this.username = loginRequest.getUsername();
                             sendResponse(loginSuccessful);
-                            System.out.println("LOGIN: " + loginSuccessful);
                             isLoggedIn = true;
                         } else {
                             Response loginError = new ServerErrorResponse(ServerErrorResponse.Type.LOGIN_TAKEN, "Username taken");

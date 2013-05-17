@@ -195,7 +195,6 @@ public class RequestHandler implements Runnable {
         try {
             while (running.get()) {
                 Request request = requestQueue.take();
-                System.out.println("REQUEST: " + request);
                 request.accept(this.visitor);
             }
         } catch (Exception e) {

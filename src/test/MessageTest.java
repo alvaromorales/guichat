@@ -19,10 +19,10 @@ import protocol.RoomRequest.JoinOrCreateRoomRequest;
 import protocol.RoomResponse.JoinedRoomResponse;
 
 /**
- * Tests joining and leaving rooms
+ * Tests sending a message
  * Testing strategy:
- *  - test a user sending a message
- *  - test a user receiving a message from another user
+ *  - test a user sending a message and receiving it back
+ *      (this also tests that other users received it, because the server has to broadcast the message).
  * 
  *  @category no_didit
  */
@@ -57,9 +57,9 @@ public class MessageTest extends ServerTest {
         expected.add(new AvailableRoomsResponse(rooms));
         expected.add(new JoinedRoomResponse("foo", usersExpected));
         expected.add(new SendMessageRequest("benbitdiddle","foo",new SimpleMessage("hello", time, "benbitdiddle", "foo")));
-        assertEquals(expected,test.getResponseList());
+        assertEquals(expected.toString(),test.getResponseList().toString());
 
         stopServer(server);
     }
-
+    
 }

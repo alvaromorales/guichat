@@ -7,6 +7,9 @@ import protocol.RoomRequest.LeaveRoomRequest;
 import protocol.SendMessageRequest;
 import protocol.StopServer;
 
+/**
+ * Represents a Visitor for server requests
+ */
 public interface Visitor<E> {
     public E visit(LogoutRequest request);
     public E visit(StopServer request);

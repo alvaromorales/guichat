@@ -4,6 +4,7 @@ import main.Server;
 
 /**
  * Abstract class with helper methods for server testing
+ * 
  * @category no_didit
  */
 public abstract class ServerTest {

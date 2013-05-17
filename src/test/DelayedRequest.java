@@ -26,6 +26,7 @@ public class DelayedRequest implements Delayed {
 
     /**
      * Compares a DelayedRequest object with another DelayedRequest object
+     * Referenced from http://aredko.blogspot.com/2012/04/using-delayed-queues-in-practice.html
      */
     @Override
     public int compareTo(Delayed delayed) {
@@ -45,6 +46,7 @@ public class DelayedRequest implements Delayed {
     /**
      * Gets the request's delay
      * @return the request's delay
+     * referenced from http://aredko.blogspot.com/2012/04/using-delayed-queues-in-practice.html
      */
     @Override
     public long getDelay(TimeUnit unit) {
