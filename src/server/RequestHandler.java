@@ -18,7 +18,6 @@ import protocol.Response;
 import protocol.SendMessageRequest;
 import protocol.StopServer;
 import protocol.UserJoinOrLeaveRoomResponse;
-import protocol.UsersInRoomResponse;
 
 /**
  * Represents a RequestHandler thread
@@ -45,23 +44,6 @@ public class RequestHandler implements Runnable {
         public synchronized Void visit(SendMessageRequest message) {
             ChatRoom room = chatRooms.get(message.getRoomName());
             room.broadcastResponse(message);
-            return null;
-        }
-
-        /**
-         * Gets all of the users in a room
-         */
-        @Override
-        public synchronized Void visit(GetUsersInRoomRequest request) {
-            User u = usersMap.get(request.getUsername());
-            ChatRoom room = chatRooms.get(request.getRoomName());
-
-            if (room == null) {
-                u.sendResponse(new UsersInRoomResponse(request.getRoomName(), new ArrayList<String>(0)));
-            } else {
-                u.sendResponse(new UsersInRoomResponse(request.getRoomName(), room.getUsers()));
-            }
-
             return null;
         }
 
