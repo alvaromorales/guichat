@@ -140,6 +140,9 @@ public class RoomResponse {
             return "LeftRoomResponse [" + super.toString() + "]";
         }
 
+        /**
+         * Accepts a visitor
+         */
         @Override
         public <E> E accept(ClientVisitor<E> v) {
             return v.visit(this);

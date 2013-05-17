@@ -77,19 +77,6 @@ public class SimpleMessage implements Message {
     }
 
     /**
-     * Creates a hashcode for the Message
-     * 
-     * @return hash of the Message (int)
-     */
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        for (char c: this.message.toCharArray()) hash = hash*31 + c;
-        for (char c: this.username.toCharArray()) hash = hash*31 + c;
-        return hash;
-    }
-
-    /**
      * Checks to see if the given Object is equal to
      * this Message
      * 
@@ -97,20 +84,34 @@ public class SimpleMessage implements Message {
      */
     @Override
     public boolean equals(Object obj) {
-        //check edges
-        if (obj == null) return false;
-        if (obj == this) return true;
-        if (!(obj instanceof SimpleMessage)) return false;
-        
-        SimpleMessage that = (SimpleMessage) obj;
-        //just check that the name's are equal. name's unique for a ChatWindow.
-        if (this.message.equals(that.message) && 
-            this.timestamp.equals(that.timestamp) &&
-            this.username.equals(that.username) &&
-            this.conversation.equals(that.conversation)) {
+        if (this == obj)
             return true;
-        }
-        //else return false
-        return false;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        SimpleMessage other = (SimpleMessage) obj;
+        if (conversation == null) {
+            if (other.conversation != null)
+                return false;
+        } else if (!conversation.equals(other.conversation))
+            return false;
+        if (message == null) {
+            if (other.message != null)
+                return false;
+        } else if (!message.equals(other.message))
+            return false;
+        if (timestamp == null) {
+            if (other.timestamp != null)
+                return false;
+        } else if (!timestamp.equals(other.timestamp))
+            return false;
+        if (username == null) {
+            if (other.username != null)
+                return false;
+        } else if (!username.equals(other.username))
+            return false;
+        return true;
     }
+
 }

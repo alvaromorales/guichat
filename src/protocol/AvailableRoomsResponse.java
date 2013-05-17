@@ -36,4 +36,35 @@ public class AvailableRoomsResponse implements Response {
         return v.visit(this);
     }
 
+    /**
+     * Gets the String representation of an AvailableRoomsResponse object
+     */
+    @Override
+    public String toString() {
+        return "AvailableRoomsResponse [rooms=" + rooms + "]";
+    }
+
+
+    /**
+     * Checks if an AvailableRoomsResponse is equal to another object
+     * @param obj the object to compare to
+     * @return true if equals, else false
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        AvailableRoomsResponse other = (AvailableRoomsResponse) obj;
+        if (rooms == null) {
+            if (other.rooms != null)
+                return false;
+        } else if (!rooms.equals(other.rooms))
+            return false;
+        return true;
+    }
+        
 }

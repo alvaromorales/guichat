@@ -45,16 +45,16 @@ public class SendMessageRequest implements Request, Response {
     public Message getMessage() {
         return message;
     }
-    
+
     /**
      * Gets the string representation of the SendMessageRequest object
      * @return the string representation of the SendMessageRequest object
      */
     @Override
     public String toString() {
-            return "username=" + username + 
-                   ", roomName=" + roomName +
-                   ", message=" + message;
+        return "username=" + username + 
+                ", roomName=" + roomName +
+                ", message=" + message;
     }
 
     /**
@@ -72,30 +72,37 @@ public class SendMessageRequest implements Request, Response {
      */
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null) return false;
-        if (getClass() != obj.getClass()) return false;
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
         SendMessageRequest other = (SendMessageRequest) obj;
-        if (getRoomName() == null) {
-            if (other.getRoomName() != null)
+        if (message == null) {
+            if (other.message != null)
                 return false;
-        } else if (!getRoomName().equals(other.getRoomName()))
+        } else if (!message.equals(other.message))
             return false;
-        if (getUsername() == null) {
-            if (other.getUsername() != null)
+        if (roomName == null) {
+            if (other.roomName != null)
                 return false;
-        } else if (!getUsername().equals(other.getUsername()))
+        } else if (!roomName.equals(other.roomName))
             return false;
-        if (getMessage() == null) {
-            if (other.getMessage() != null)
+        if (username == null) {
+            if (other.username != null)
                 return false;
-        } else if (!getMessage().equals(other.getMessage()))
+        } else if (!username.equals(other.username))
             return false;
         return true;
     }
 
+    /**
+     * Accepts a visitor
+     */
     @Override
     public <E> E accept(ClientVisitor<E> v) {
         return v.visit(this);
     }
+
 }
