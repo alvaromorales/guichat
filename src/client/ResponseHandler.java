@@ -4,12 +4,10 @@ import protocol.Registration.LoginResponse;
 import protocol.AvailableRoomsResponse;
 import protocol.Response;
 import protocol.RoomResponse.JoinedRoomResponse;
-import protocol.RoomResponse.LeftRoomResponse;
 import protocol.SendMessageRequest;
 import protocol.ServerErrorResponse.Type;
 import protocol.ServerErrorResponse;
 import protocol.UserJoinOrLeaveRoomResponse;
-import protocol.UsersInRoomResponse;
 
 /**
  * Represents a ResponseHandler thread
@@ -59,16 +57,6 @@ public class ResponseHandler implements Runnable {
         }
 
         /**
-         * Used to alert user that they have successfully exited a room
-         * Didn't end up needing this
-         */
-        @Override
-        public Void visit(LeftRoomResponse response) {
-            //TODO
-            return null;
-        }
-
-        /**
          * Server error response.
          * Can result from unsuccessful login
          * Or unauthorized access attempt
@@ -98,16 +86,6 @@ public class ResponseHandler implements Runnable {
             return null;
         }
 
-        /**
-         * Alert user of users in a room.
-         * Didn't end up using this
-         */
-        @Override
-        public Void visit(UsersInRoomResponse response) {
-            // TODO Auto-generated method stub
-            return null;
-        }
-        
         /**
          * Alert user that another user has joined or left a room.
          */
